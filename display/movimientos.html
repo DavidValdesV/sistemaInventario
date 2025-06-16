@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario MUNI Quilleco - Movimientos</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Manrope%3Awght%40400%3B500%3B700%3B800&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style>
+        /* Estilos adicionales para la tabla si son necesarios */
+        tbody tr:nth-child(odd) {
+            background-color: #f9fafb; /* Color de fondo para filas impares */
+        }
+        tbody tr:hover {
+            background-color: #f1f4f1; /* Color al pasar el mouse */
+        }
+        /* Estilos para el modal (aunque movimientos no tenga, se mantiene por consistencia de base) */
+        .modal {
+            display: none; /* Oculto por defecto */
+            position: fixed; /* Posición fija en la pantalla */
+            z-index: 1000; /* Asegura que esté por encima de todo */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Habilitar scroll si es necesario */
+            background-color: rgba(0,0,0,0.4); /* Fondo semi-transparente */
+            justify-content: center; /* Centrar horizontalmente */
+            align-items: center; /* Centrar verticalmente */
+            backdrop-filter: blur(5px); /* Efecto de desenfoque */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto; /* Centrar el contenido del modal */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex h-screen">
+    <div class="w-64 bg-gray-800 text-white flex flex-col">
+        <div class="p-4 text-2xl font-bold text-center border-b border-gray-700">
+            Inventario MUNI
+        </div>
+        <nav class="flex-1 px-2 py-4">
+            <a href="/main.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2 2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                Inicio
+            </a>
+            <a href="/articulos.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5.989A2 2 0 0115 5.01V21l-5-2-5 2V5.01A2 2 0 017.011 3z"/>
+                </svg>
+                Artículos
+            </a>
+            <a href="/movimientos.html" class="flex items-center px-4 py-2 mt-2 text-white bg-gray-700 rounded-md">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                </svg>
+                Movimientos
+            </a>
+            <a href="/proveedores.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h-4c-1.105 0-2-.895-2-2v-3c0-.552.448-1 1-1h4c.552 0 1 .448 1 1v3c0 1.105-.895 2-2 2zm-5-14a4 4 0 11-8 0 4 4 0 018 0zM12 21v-4"/>
+                </svg>
+                Proveedores
+            </a>
+            <a href="/categorias.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H7a2 2 0 00-2 2v2m7-7V3"/>
+                </svg>
+                Categorías
+            </a>
+            <a href="/marcas.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2 2m-2-2l-2 2m0 0l2 2m-2-2L9 5m7 6v4m-2-2h4m-7 0a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                Marcas
+            </a>
+            <a href="/solicitudes.html" class="flex items-center px-4 py-2 mt-2 text-white bg-gray-700 rounded-md">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                </svg>
+                Solicitudes
+            </a>
+            </nav>
+        <div class="p-4 border-t border-gray-700">
+            <a href="/logout" class="flex items-center px-4 py-2 mt-2 text-red-400 hover:bg-gray-700 hover:text-red-300 rounded-md">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                Cerrar Sesión
+            </a>
+        </div>
+    </div>
+
+    <div class="flex-1 p-8 overflow-y-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Historial de Movimientos</h1>
+
+        <div class="flex justify-between items-center mb-6">
+            <div class="relative w-1/3">
+                <input type="text" id="searchInput" placeholder="Buscar movimientos..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline pl-10">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
+            </div>
+
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Mov.</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Artículo</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Observación</th>
+                    </tr>
+                </thead>
+                <tbody id="movimientosTableBody" class="bg-white divide-y divide-gray-200">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const movimientosTableBody = document.getElementById('movimientosTableBody');
+
+        // Función para formatear fechas y horas
+        function formatFechaHora(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        }
+
+        // --- Funciones para cargar y filtrar movimientos ---
+        async function fetchMovimientos() {
+            try {
+                const response = await fetch('/api/movimientos');
+                const movimientos = await response.json();
+                displayMovimientos(movimientos);
+            } catch (error) {
+                console.error('Error al obtener movimientos:', error);
+                alert('Error al cargar el historial de movimientos.');
+            }
+        }
+
+        function displayMovimientos(movimientos) {
+            movimientosTableBody.innerHTML = '';
+            movimientos.forEach(movimiento => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${movimiento.id_movimiento}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${movimiento.nombre_articulo || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${movimiento.nombre_usuario || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${movimiento.tipo_movimiento}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${movimiento.cantidad}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatFechaHora(movimiento.fecha)}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500">${movimiento.observacion || 'Sin observación'}</td>
+                `;
+                movimientosTableBody.appendChild(row);
+            });
+        }
+
+        function filtrarMovimientosTabla() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const rows = movimientosTableBody.getElementsByTagName('tr');
+
+            Array.from(rows).forEach(row => {
+                const textContent = row.textContent.toLowerCase();
+                if (textContent.includes(searchText)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', fetchMovimientos);
+        document.getElementById('searchInput').addEventListener('keyup', filtrarMovimientosTabla);
+
+    </script>
+</body>
+</html>

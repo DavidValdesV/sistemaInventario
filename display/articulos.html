@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario MUNI Quilleco - Artículos</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Manrope%3Awght%40400%3B500%3B700%3B800&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style>
+        /* Estilos adicionales para la tabla si son necesarios */
+        tbody tr:nth-child(odd) {
+            background-color: #f9fafb; /* Color de fondo para filas impares */
+        }
+        tbody tr:hover {
+            background-color: #f1f4f1; /* Color al pasar el mouse */
+        }
+        /* Estilos para el modal */
+        .modal {
+            display: none; /* Oculto por defecto */
+            position: fixed; /* Posición fija en la pantalla */
+            z-index: 1000; /* Asegura que esté por encima de todo */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Habilitar scroll si es necesario */
+            background-color: rgba(0,0,0,0.4); /* Fondo semi-transparente */
+            justify-content: center; /* Centrar horizontalmente */
+            align-items: center; /* Centrar verticalmente */
+            backdrop-filter: blur(5px); /* Efecto de desenfoque */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto; /* Centrar el contenido del modal */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex h-screen">
+    <div class="w-64 bg-gray-800 text-white flex flex-col">
+        <div class="p-4 text-2xl font-bold text-center border-b border-gray-700">
+            Gestion Inventario
+        </div>
+        <nav class="flex-1 px-2 py-4">
+            <a href="/main.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2 2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                Inicio
+            </a>
+            <a href="/articulos.html" class="flex items-center px-4 py-2 mt-2 text-white bg-gray-700 rounded-md">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5.989A2 2 0 0115 5.01V21l-5-2-5 2V5.01A2 2 0 017.011 3z"/>
+                </svg>
+                Artículos
+            </a>
+            <a href="/movimientos.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                </svg>
+                Movimientos
+            </a>
+            <a href="/proveedores.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h-4c-1.105 0-2-.895-2-2v-3c0-.552.448-1 1-1h4c.552 0 1 .448 1 1v3c0 1.105-.895 2-2 2zm-5-14a4 4 0 11-8 0 4 4 0 018 0zM12 21v-4"/>
+                </svg>
+                Proveedores
+            </a>
+            <a href="/categorias.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H7a2 2 0 00-2 2v2m7-7V3"/>
+                </svg>
+                Categorías
+            </a>
+            <a href="/marcas.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2 2m-2-2l-2 2m0 0l2 2m-2-2L9 5m7 6v4m-2-2h4m-7 0a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                Marcas
+            </a>
+            <a href="/solicitudes.html" class="flex items-center px-4 py-2 mt-2 text-white bg-gray-700 rounded-md">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                </svg>
+                Solicitudes
+            </a>
+            </nav>
+        <div class="p-4 border-t border-gray-700">
+            <a href="/logout" class="flex items-center px-4 py-2 mt-2 text-red-400 hover:bg-gray-700 hover:text-red-300 rounded-md">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                Cerrar Sesión
+            </a>
+        </div>
+    </div>
+
+    <div class="flex-1 p-8 overflow-y-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Gestión de Artículos</h1>
+
+        <div class="flex justify-between items-center mb-6">
+            <div class="relative w-1/3">
+                <input type="text" id="searchInput" placeholder="Buscar artículos..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline pl-10">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
+            <button id="addArticleButton" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Agregar Nuevo Artículo
+            </button>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Artículo</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Ingreso</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proveedor</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marca</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="articlesTableBody" class="bg-white divide-y divide-gray-200">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeEditModalButton">&times;</span>
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Editar Artículo</h2>
+            <form id="editForm">
+                <input type="hidden" id="editArticleId">
+                <div class="mb-4">
+                    <label for="editNombreArticulo" class="block text-gray-700 text-sm font-bold mb-2">Nombre del Artículo:</label>
+                    <input type="text" id="editNombreArticulo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                </div>
+                <div class="mb-4">
+                    <label for="editDescripcion" class="block text-gray-700 text-sm font-bold mb-2">Descripción:</label>
+                    <textarea id="editDescripcion" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="editCantidad" class="block text-gray-700 text-sm font-bold mb-2">Cantidad:</label>
+                    <input type="number" id="editCantidad" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required min="0">
+                </div>
+                <div class="mb-4">
+                    <label for="editFechaIngreso" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Ingreso:</label>
+                    <input type="date" id="editFechaIngreso" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                </div>
+                <div class="mb-4">
+                    <label for="editIdProveedor" class="block text-gray-700 text-sm font-bold mb-2">Proveedor:</label>
+                    <select id="editIdProveedor" name="id_proveedor" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Seleccione un Proveedor</option>
+                        </select>
+                </div>
+                <div class="mb-4">
+                    <label for="editIdCategoria" class="block text-gray-700 text-sm font-bold mb-2">Categoría:</label>
+                    <select id="editIdCategoria" name="id_categoria" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Seleccione una Categoría</option>
+                        </select>
+                </div>
+                <div class="mb-4">
+                    <label for="editIdMarca" class="block text-gray-700 text-sm font-bold mb-2">Marca:</label>
+                    <select id="editIdMarca" name="id_marca" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Seleccione una Marca</option>
+                        </select>
+                </div>
+                <div class="flex justify-end mt-6">
+                    <button type="button" id="cancelEditButton" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeAddModalButton">&times;</span>
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Agregar Nuevo Artículo</h2>
+            <form id="addForm">
+                <p id="addFormError" class="text-red-600 text-sm mb-4 hidden"></p>
+
+                <div class="mb-4">
+                    <label for="addNombreArticulo" class="block text-gray-700 text-sm font-bold mb-2">Nombre del Artículo:</label>
+                    <input type="text" id="addNombreArticulo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                </div>
+                <div class="mb-4">
+                    <label for="addDescripcion" class="block text-gray-700 text-sm font-bold mb-2">Descripción:</label>
+                    <textarea id="addDescripcion" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="addCantidad" class="block text-gray-700 text-sm font-bold mb-2">Cantidad:</label>
+                    <input type="number" id="addCantidad" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required min="0">
+                </div>
+                <div class="mb-4">
+                    <label for="addFechaIngreso" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Ingreso:</label>
+                    <input type="date" id="addFechaIngreso" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                </div>
+                <div class="mb-4">
+                    <label for="addIdProveedor" class="block text-gray-700 text-sm font-bold mb-2">Proveedor:</label>
+                    <select id="addIdProveedor" name="id_proveedor" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Seleccione un Proveedor</option>
+                        </select>
+                </div>
+                <div class="mb-4">
+                    <label for="addIdCategoria" class="block text-gray-700 text-sm font-bold mb-2">Categoría:</label>
+                    <select id="addIdCategoria" name="id_categoria" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Seleccione una Categoría</option>
+                        </select>
+                </div>
+                <div class="mb-4">
+                    <label for="addIdMarca" class="block text-gray-700 text-sm font-bold mb-2">Marca:</label>
+                    <select id="addIdMarca" name="id_marca" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Seleccione una Marca</option>
+                        </select>
+                </div>
+                <div class="flex justify-end mt-6">
+                    <button type="button" id="cancelAddButton" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Agregar Artículo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const articlesTableBody = document.getElementById('articlesTableBody');
+        const editModal = document.getElementById('editModal');
+        const addModal = document.getElementById('addModal');
+
+        // Función para abrir/cerrar modales
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function openEditModal() {
+            openModal('editModal');
+            // Populate dropdowns for editing
+            populateDropdown('/api/proveedores', 'editIdProveedor', 'id_proveedor', 'nombre_proveedor');
+            populateDropdown('/api/categorias', 'editIdCategoria', 'id_categoria', 'nombre_categoria');
+            populateDropdown('/api/marcas', 'editIdMarca', 'id_marca', 'nombre_marca');
+        }
+
+        function closeEditModal() {
+            closeModal('editModal');
+        }
+
+        function openAddModal() {
+            openModal('addModal');
+            // Populate dropdowns for adding
+            populateDropdown('/api/proveedores', 'addIdProveedor', 'id_proveedor', 'nombre_proveedor');
+            populateDropdown('/api/categorias', 'addIdCategoria', 'id_categoria', 'nombre_categoria');
+            populateDropdown('/api/marcas', 'addIdMarca', 'id_marca', 'nombre_marca');
+            // Reset form when opening to add a new article
+            document.getElementById('addForm').reset();
+        }
+
+        function closeAddModal() {
+            closeModal('addModal');
+            document.getElementById('addFormError').classList.add('hidden');
+
+            document.getElementById('addForm').reset(); // Clear form when closing
+        }
+
+        // Función para formatear fechas
+        function formatFecha(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // --- Funciones para cargar y filtrar artículos ---
+        async function fetchArticulos() {
+            try {
+                const response = await fetch('/api/articulos');
+                const articulos = await response.json();
+                displayArticulos(articulos);
+            } catch (error) {
+                console.error('Error al obtener artículos:', error);
+                alert('Error al cargar los artículos.');
+            }
+        }
+
+        function displayArticulos(articulos) {
+            articlesTableBody.innerHTML = '';
+            articulos.forEach(articulo => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${articulo.id_articulo}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${articulo.nombre_articulo}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${articulo.descripcion || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${articulo.stock}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatFecha(articulo.fecha_ingreso)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${articulo.nombre_proveedor || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${articulo.nombre_categoria || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${articulo.nombre_marca || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button onclick="editArticle(${articulo.id_articulo})" class="text-blue-600 hover:text-blue-900 mr-2">Editar</button>
+                        <button onclick="deleteArticle(${articulo.id_articulo}, '${articulo.nombre_articulo}')" class="text-red-600 hover:text-red-900">Eliminar</button>
+                    </td>
+                `;
+                articlesTableBody.appendChild(row);
+            });
+        }
+
+        function filtrarArticulosTabla() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const rows = articlesTableBody.getElementsByTagName('tr');
+
+            Array.from(rows).forEach(row => {
+                const textContent = row.textContent.toLowerCase();
+                if (textContent.includes(searchText)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // --- Funciones para interacciones con la API ---
+
+        // Función para poblar los dropdowns de Proveedores, Categorías y Marcas
+        async function populateDropdown(url, selectElementId, idKey, nameKey, selectedId = null) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const items = await response.json();
+                const selectElement = document.getElementById(selectElementId);
+
+                // Clear existing options, but keep the "Select" option
+                selectElement.innerHTML = '<option value="">Seleccione una opción</option>';
+
+                items.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item[idKey]; // The ID to be sent to the server
+                    option.textContent = item[nameKey]; // The name to display
+                    if (selectedId !== null && item[idKey] === selectedId) {
+                        option.selected = true; // Select the current item in edit mode
+                    }
+                    selectElement.appendChild(option);
+                });
+            } catch (error) {
+                console.error(`Error populating ${selectElementId}:`, error);
+                // Optionally display a user-friendly error message
+                alert(`Error al cargar datos para ${selectElementId}. Por favor, recargue la página.`);
+            }
+        }
+
+
+        // Manejar el submit del formulario para AGREGAR un artículo
+async function handleAddSubmit(event) {
+    event.preventDefault();
+
+    const errorElement = document.getElementById('addFormError');
+    errorElement.classList.add('hidden');
+
+    // Obtener los valores
+    const nombre_articulo = document.getElementById('addNombreArticulo')?.value.trim();
+    const descripcion = document.getElementById('addDescripcion')?.value.trim();
+    const cantidadInput = document.getElementById('addCantidad');
+    const cantidad = cantidadInput?.valueAsNumber;
+    const fecha_ingreso = document.getElementById('addFechaIngreso')?.value;
+    const id_proveedor = document.getElementById('addIdProveedor')?.value;
+    const id_categoria = document.getElementById('addIdCategoria')?.value;
+    const id_marca = document.getElementById('addIdMarca')?.value;
+
+    // Log para debug
+    console.log({
+        nombre_articulo, descripcion, cantidad, fecha_ingreso, id_proveedor, id_categoria, id_marca
+    });
+
+    // Validar
+    if (
+        !nombre_articulo ||
+        isNaN(cantidad) || cantidad < 0 ||
+        !fecha_ingreso ||
+        !id_proveedor || !id_categoria || !id_marca
+    ) {
+        errorElement.textContent = 'Completa todos los campos correctamente.';
+        errorElement.classList.remove('hidden');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/articulos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                nombre_articulo,
+                descripcion,
+                cantidad,
+                fecha_ingreso,
+                id_proveedor,
+                id_categoria,
+                id_marca
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            errorElement.textContent = result.error || 'Error al agregar artículo.';
+            errorElement.classList.remove('hidden');
+            return;
+        }
+
+        closeAddModal();
+        fetchArticulos();
+
+    } catch (error) {
+        console.error('Error en el envío:', error);
+        errorElement.textContent = 'Error inesperado. Intenta nuevamente.';
+        errorElement.classList.remove('hidden');
+    }
+}
+document.getElementById('addForm').addEventListener('submit', handleAddSubmit);
+
+
+
+
+// Función para cargar datos de un artículo para edición
+async function editArticle(id) {
+    try {
+        const response = await fetch(`/api/articulos`); // Fetch all to find the specific one locally
+        const articulos = await response.json();
+        const articulo = articulos.find(a => a.id_articulo === id);
+
+        if (articulo) {
+            document.getElementById('editArticleId').value = articulo.id_articulo;
+            document.getElementById('editNombreArticulo').value = articulo.nombre_articulo;
+            document.getElementById('editDescripcion').value = articulo.descripcion || '';
+            document.getElementById('editCantidad').value = articulo.stock; // ¡CORREGIDO: aquí debes usar .stock!
+            document.getElementById('editFechaIngreso').value = formatFecha(articulo.fecha_ingreso);
+
+            // Populate dropdowns and set selected value for editing
+            // Asegúrate de que populateDropdown esté definido y funcione correctamente
+            await populateDropdown('/api/proveedores', 'editIdProveedor', 'id_proveedor', 'nombre_proveedor', articulo.id_proveedor);
+            await populateDropdown('/api/categorias', 'editIdCategoria', 'id_categoria', 'nombre_categoria', articulo.id_categoria);
+            await populateDropdown('/api/marcas', 'editIdMarca', 'id_marca', 'nombre_marca', articulo.id_marca);
+
+            openEditModal();
+        } else {
+            alert('Artículo no encontrado.');
+        }
+    } catch (error) {
+        console.error('Error al cargar datos para edición:', error);
+        alert('Error al cargar datos del artículo para editar.');
+    }
+}
+async function loadArticleForEdit(id) {
+    try {
+        const response = await fetch(`/api/articulos/${id}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            alert(errorData.error || 'Error al cargar el artículo.');
+            return;
+        }
+        const article = await response.json();
+
+        // Rellenar los campos del formulario
+        document.getElementById('edit-id').value = article.id_articulo;
+        document.getElementById('edit-nombre_articulo').value = article.nombre_articulo;
+        document.getElementById('edit-descripcion').value = article.descripcion || ''; // Manejar nulos
+        document.getElementById('edit-cantidad').value = article.cantidad;
+        // Si fecha_ingreso es un campo de input type="date", asegúrate de que el formato sea 'YYYY-MM-DD'
+        document.getElementById('edit-fecha_ingreso').value = article.fecha_ingreso ? article.fecha_ingreso.split('T')[0] : '';
+        
+        // ¡¡ESTO ES CRÍTICO!! Asegúrate de que los SELECTs estén seleccionando la opción correcta.
+        // Esto solo funcionará si las opciones (proveedores, categorías, marcas) ya están cargadas en los <select>
+        document.getElementById('edit-id-proveedor').value = article.id_proveedor;
+        document.getElementById('edit-id-categoria').value = article.id_categoria;
+        document.getElementById('edit-id-marca').value = article.id_marca;
+
+        openEditModal(); // Abre el modal después de cargar los datos
+    } catch (error) {
+        console.error('Error al cargar artículo para edición:', error);
+        alert('Error al cargar datos del artículo para edición. Intenta de nuevo.');
+    }
+}
+
+        // Manejar el submit del formulario para EDITAR un artículo
+async function handleEditSubmit(event) {
+    event.preventDefault(); // Evita el envío por defecto del formulario
+
+    const id = document.getElementById('edit-id').value;
+    const data = {
+        nombre_articulo: document.getElementById('edit-nombre_articulo').value,
+        descripcion: document.getElementById('edit-descripcion').value,
+        cantidad: parseInt(document.getElementById('edit-cantidad').value),
+        
+        // ¡¡ASEGURATE DE QUE ESTOS VALORES SEAN NÚMEROS VÁLIDOS!!
+        // Si el valor del select es "" o no es un número, parseInt() devolverá NaN.
+        id_proveedor: parseInt(document.getElementById('edit-id-proveedor').value),
+        id_categoria: parseInt(document.getElementById('edit-id-categoria').value),
+        id_marca: parseInt(document.getElementById('edit-id-marca').value),
+        
+        fecha_ingreso: document.getElementById('edit-fecha_ingreso').value
+    };
+
+    // --- VALIDACIONES ADICIONALES EN EL FRONTEND (RECOMENDADO) ---
+    // Si la descripción puede ser opcional (NULLable en DB) y el input es vacío, cámbialo a null
+    if (data.descripcion === '') {
+        data.descripcion = null;
+    }
+
+    // Validar que los IDs de FK no sean NaN (Not-a-Number)
+    if (isNaN(data.id_proveedor)) {
+        alert('Por favor, selecciona un proveedor válido.');
+        return;
+    }
+    if (isNaN(data.id_categoria)) {
+        alert('Por favor, selecciona una categoría válida.');
+        return;
+    }
+    if (isNaN(data.id_marca)) {
+        alert('Por favor, selecciona una marca válida.');
+        return;
+    }
+    if (isNaN(data.cantidad) || data.cantidad <= 0) {
+        alert('La cantidad debe ser un número válido y mayor que cero.');
+        return;
+    }
+    if (!data.nombre_articulo.trim()) {
+        alert('El nombre del artículo no puede estar vacío.');
+        return;
+    }
+    // --- FIN VALIDACIONES ---
+
+    try {
+        const response = await fetch(`/api/articulos/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            alert(result.message);
+            closeEditModal();
+            cargarArticulos(); // Recargar la tabla de artículos
+        } else {
+            // Manejar errores específicos de la respuesta del servidor
+            const errorData = await response.json();
+            alert(errorData.error || 'Error al actualizar artículo.');
+            console.error('Detalles del error del servidor:', errorData.details);
+        }
+    } catch (error) {
+        console.error('Error al enviar la actualización:', error);
+        alert('Error de conexión o del servidor al actualizar el artículo. Intenta nuevamente.');
+    }
+}
+
+        async function deleteArticle(id, nombre) {
+            if (confirm(`¿Estás seguro de que quieres eliminar el artículo "${nombre}" (ID: ${id})? Esta acción también registrará un movimiento de eliminación.`)) {
+                try {
+                    const response = await fetch(`/api/articulos/${id}`, {
+                        method: 'DELETE',
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert(result.message);
+                        fetchArticulos(); // Recargar la tabla
+                    } else {
+                        console.error('Error al eliminar artículo:', result.error);
+                        alert(`Error al eliminar artículo: ${result.error}`);
+                    }
+                } catch (error) {
+                    console.error('Error de red o del servidor al eliminar artículo:', error);
+                    alert('Error de conexión o del servidor al eliminar artículo.');
+                }
+            }
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchArticulos();
+            // Initial population of dropdowns might be useful if the modal opens directly on page load
+            // or if it's a single page app where modal content isn't destroyed
+            // populateDropdown('/api/proveedores', 'addIdProveedor', 'id_proveedor', 'nombre_proveedor');
+            // populateDropdown('/api/categorias', 'addIdCategoria', 'id_categoria', 'nombre_categoria');
+            // populateDropdown('/api/marcas', 'addIdMarca', 'id_marca', 'nombre_marca');
+        });
+
+        document.getElementById('searchInput').addEventListener('keyup', filtrarArticulosTabla);
+
+        // Event listeners para el modal de EDICIÓN de Artículo
+        document.getElementById('closeEditModalButton').addEventListener('click', closeEditModal);
+        document.getElementById('cancelEditButton').addEventListener('click', closeEditModal);
+        document.getElementById('editForm').addEventListener('submit', handleEditSubmit);
+
+        // Event listeners para el modal de AGREGAR Artículo
+        document.getElementById('addArticleButton').addEventListener('click', openAddModal);
+        document.getElementById('closeAddModalButton').addEventListener('click', closeAddModal);
+        document.getElementById('cancelAddButton').addEventListener('click', closeAddModal);
+        document.getElementById('addForm').addEventListener('submit', handleAddSubmit);
+
+        // Cerrar modales al hacer clic fuera (solo los modales de artículos)
+        window.addEventListener('click', (event) => {
+            const modals = ['editModal', 'addModal']; // Solo los modales de artículos
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (modal && event.target === modal) {
+                    if (modalId === 'editModal') closeEditModal();
+                    else if (modalId === 'addModal') closeAddModal();
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Panel Principal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    #welcome { display: none; }
+    #main-content { display: flex; }
+  </style>
+</head>
+<body class="flex items-start justify-start h-screen bg-gray-100" style='font-family: Inter, "Noto Sans", sans-serif;'>
+
+  <!-- Pantalla de bienvenida (oculta) -->
+  <div id="welcome" class="text-center"></div>
+
+  <!-- Contenido principal -->
+  <div id="main-content" class="flex flex-col min-h-screen bg-white">
+    <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f5] px-10 py-3">
+      <div class="flex items-center gap-4 text-[#111418]">
+          <div class="size-6 text-[#0c7ff2]">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
+      </svg>
+          </div>
+        <h2 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em]">Sistema Inventario Municipalidad de Quilleco</h2>
+      </div>
+      <div class="flex flex-1 justify-end gap-8">
+        <div class="flex items-center gap-9">
+          <a class="text-[#111418] text-sm font-medium leading-normal" href="#">Tableros</a>
+          <a class="text-[#111418] text-sm font-medium leading-normal" href="objetos.html">Objetos</a>
+          <a class="text-[#111418] text-sm font-medium leading-normal" href="#">Solicitudes</a>
+          <a class="text-[#111418] text-sm font-medium leading-normal" href="#">Reportes</a>
+          <a class="text-[#111418] text-sm font-medium leading-normal" href="#">Configuraciones</a>
+        </div>
+        <div
+          class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+          style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBJNNGIlpcNvyl9Qc3cR4LNV6KJt1IhaIbD3Bg5NQemu7cD0nXH-eWD91tOID1zurQA3OL2q3-wURc6-g78qkks-6lfNgY_Ejqs1Au2p34LHQtFs3-i6lNpK270eRBAyt9M92dagpLog6btnEggJelPymel-D_stlYu4eFV8c9yGwWX0DcX59eBUlEoB5_X8De3Mp5eV_tIKQmYy_-Kla_RJL-w1xzB9uDde01kfK9MGOItYFOnDh0gLQh2QVZ3qaxsI7DbjRI1BLmr");'
+        ></div>
+      </div>
+    </header>
+
+    <main class="px-40 flex flex-1 flex-col justify-center py-5">
+      <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+        <div class="flex flex-wrap justify-between gap-3 p-4">
+          <p class="text-[#111418] tracking-light text-[32px] font-bold leading-tight min-w-72">Inventario General</p>
+        </div>
+
+        <div class="px-4 py-3 @container">
+          <!-- Cambié flex-row (default) a flex-col para que tabla y paginación queden en columna -->
+          <div class="flex flex-col overflow-hidden rounded-lg border border-[#dbe0e6] bg-white">
+            <table class="flex-1">
+              <thead>
+                <tr class="bg-white">
+                  <th class="px-4 py-3 text-left text-[#111418] w-[400px] text-sm font-medium leading-normal">Nombre</th>
+                  <th class="px-4 py-3 text-left text-[#111418] w-[400px] text-sm font-medium leading-normal">Marca</th>
+                  <th class="px-4 py-3 text-left text-[#111418] w-[400px] text-sm font-medium leading-normal">Cantidad</th>
+                  <th class="px-4 py-3 text-left text-[#111418] w-[400px] text-sm font-medium leading-normal">Fecha de ingreso</th>
+                </tr>
+              </thead>
+              <tbody id="articulos-tbody"></tbody>
+            </table>
+            <!-- Aquí está la paginación abajo, con margen arriba para separarla -->
+            <div id="paginacion-articulos" class="flex justify-end gap-2 py-4 mt-4"></div>
+          </div>
+        </div>
+
+        <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Movimientos Recientes</h2>
+        <div class="px-4 py-3 @container">
+          <div class="flex overflow-hidden rounded-lg border border-[#dbe0e6] bg-white">
+            <table class="flex-1">
+              <thead>
+                <tr class="bg-white">
+                  <th class="px-4 py-3 text-left text-[#111418] w-[200px] text-sm font-medium leading-normal">Artículo</th>
+                  <th class="px-4 py-3 text-left text-[#111418] w-[150px] text-sm font-medium leading-normal">Tipo</th>
+                  <th class="px-4 py-3 text-left text-[#111418] w-[100px] text-sm font-medium leading-normal">Cantidad</th>
+                  <th class="px-4 py-3 text-left text-[#111418] w-[200px] text-sm font-medium leading-normal">Fecha</th>
+                  <th class="px-4 py-3 text-left text-[#111418] w-[250px] text-sm font-medium leading-normal">Usuario</th>
+                  <th class="px-4 py-3 text-left text-[#111418] w-[400px] text-sm font-medium leading-normal">Observación</th>
+                </tr>
+              </thead>
+              <tbody id="movimientos-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+  <script>
+    const ITEMS_POR_PAGINA = 8;
+    let articulos = [];
+    let paginaActual = 1;
+
+    // Carga inmediata al abrir
+    cargarArticulos();
+    cargarMovimientosRecientes();
+
+    async function cargarArticulos() {
+      try {
+        const res = await fetch('http://localhost:3000/api/articulos');
+        if (!res.ok) throw new Error('Error al obtener artículos');
+        articulos = await res.json();
+        paginaActual = 1; // Reiniciar a la página 1 cuando carga
+        mostrarPagina(paginaActual);
+        renderizarPaginacion();
+      } catch (error) {
+        console.error('Error cargando artículos:', error);
+      }
+    }
+
+    function mostrarPagina(pagina) {
+      const tbody = document.getElementById('articulos-tbody');
+      tbody.innerHTML = '';
+      const start = (pagina - 1) * ITEMS_POR_PAGINA;
+      const end = start + ITEMS_POR_PAGINA;
+      const paginaArticulos = articulos.slice(start, end);
+
+      paginaArticulos.forEach(a => {
+        const fila = document.createElement('tr');
+        fila.classList.add('border-t', 'border-[#dbe0e6]');
+        fila.innerHTML = `
+          <td class="h-[72px] px-4 py-2">${a.nombre_articulo}</td>
+          <td class="h-[72px] px-4 py-2">${a.marca}</td>
+          <td class="h-[72px] px-4 py-2">${a.cantidad}</td>
+          <td class="h-[72px] px-4 py-2">${new Date(a.fecha_ingreso).toLocaleDateString()}</td>
+        `;
+        tbody.appendChild(fila);
+      });
+    }
+
+    function renderizarPaginacion() {
+      const paginacionDiv = document.getElementById('paginacion-articulos');
+      paginacionDiv.innerHTML = '';
+      const totalPaginas = Math.ceil(articulos.length / ITEMS_POR_PAGINA);
+
+      for (let i = 1; i <= totalPaginas; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.classList.add('px-3', 'py-1', 'border', 'rounded', 'hover:bg-gray-200');
+        if (i === paginaActual) {
+          btn.classList.add('bg-blue-500', 'text-white', 'cursor-default');
+        } else {
+          btn.addEventListener('click', () => {
+            paginaActual = i;
+            mostrarPagina(paginaActual);
+            renderizarPaginacion();
+          });
+        }
+        paginacionDiv.appendChild(btn);
+      }
+    }
+
+    async function cargarMovimientosRecientes() {
+      try {
+        const res = await fetch('http://localhost:3000/api/movimientos');
+        if (!res.ok) throw new Error('Error al obtener movimientos recientes');
+        const movimientos = await res.json();
+        const tbodyMovimientos = document.getElementById('movimientos-tbody');
+        tbodyMovimientos.innerHTML = '';
+        movimientos.forEach(m => {
+          const fila = document.createElement('tr');
+          fila.classList.add('border-t', 'border-[#dbe0e6]');
+          fila.innerHTML = `
+            <td>${m.nombre_articulo}</td>
+            <td>${m.tipo_movimiento}</td>
+            <td>${m.cantidad}</td>
+            <td>${new Date(m.fecha).toLocaleDateString()}</td>
+            <td>${m.usuario}</td>
+            <td>${m.observacion || ''}</td>
+          `;
+          tbodyMovimientos.appendChild(fila);
+        });
+      } catch (error) {
+        console.error('Error cargando movimientos recientes:', error);
+      }
+    }
+  </script>
+</body>
+</html>

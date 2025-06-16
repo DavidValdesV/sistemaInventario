@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Inventario MUNI Quilleco</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&family=Inter:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  </head>
+  <body style='font-family: Inter, "Noto Sans", sans-serif;'>
+    <div class="min-h-screen flex flex-col bg-white">
+      <header class="flex items-center justify-between border-b px-10 py-3 border-[#f0f2f5]">
+        <div class="flex items-center gap-4 text-[#111418]">
+          <div class="size-6 text-[#0c7ff2]">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
+      </svg>
+          </div>
+          <h2 class="text-lg font-bold">Sistema Inventario Municipalidad de Quilleco</h2>
+        </div>
+      </header>
+
+      <div class="flex flex-1">
+        <!-- Columna izquierda: login -->
+        <div class="flex flex-1 items-center justify-center pl-40">
+          <form action="/login" method="POST" class="w-[512px]">
+            <h2 class="text-2xl font-bold text-left pb-5">Bienvenido</h2>
+
+            <!-- Usuario -->
+            <div class="mb-4">
+              <label class="block text-base font-medium mb-2" for="usuario">Usuario</label>
+              <input
+                type="text"
+                id="usuario"
+                name="usuario"
+                placeholder="Ingrese su Usuario"
+                required
+                class="form-input w-full h-14 px-4 border rounded-lg border-[#dbe0e6] placeholder-[#60758a]"
+              />
+            </div>
+
+            <!-- Contraseña -->
+            <div class="mb-6">
+              <label class="block text-base font-medium mb-2" for="contrasena">Contraseña</label>
+              <input
+                type="password"
+                id="contrasena"
+                name="contrasena"
+                placeholder="Ingrese su Contraseña"
+                required
+                class="form-input w-full h-14 px-4 border rounded-lg border-[#dbe0e6] placeholder-[#60758a]"
+              />
+            </div>
+
+            <!-- Botón -->
+            <div>
+              <button
+                type="submit"
+                class="w-full h-10 bg-[#0c7ff2] text-white font-bold rounded-lg"
+              >
+                Ingresar
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Columna derecha: imagen y texto -->
+        <div class="flex flex-1 flex-col items-center justify-center pr-20 space-y-4">
+          <h2 class="text-3xl font-bold text-center text-[#111418]">Municipalidad de Quilleco</h2>
+          <img
+            src="/imgs/logoMuniQuilleco.png"
+            alt="Imagen Municipalidad"
+            class="max-w-full h-auto rounded-lg shadow-lg"
+          />
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

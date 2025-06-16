@@ -8,194 +8,411 @@
     <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Manrope%3Awght%40400%3B500%3B700%3B800&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <style>
-        /* Estilos adicionales para la tabla si son necesarios */
+        /* Mejoras visuales para la tabla */
         tbody tr:nth-child(odd) {
-            background-color: #f9fafb; /* Color de fondo para filas impares */
+            background-color: #f8fafc;
         }
         tbody tr:hover {
-            background-color: #f1f4f1; /* Color al pasar el mouse */
+            background-color: #f1f5f9;
+            transform: translateY(-1px);
+            transition: all 0.2s ease-in-out;
         }
-        /* Estilos para el modal */
+        
+        /* Animaciones suaves */
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            transform: translateX(4px);
+        }
+        
+        /* Efectos de sombra mejorados */
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .card-shadow:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        /* Gradiente mejorado para el título */
+        .gradient-text {
+            background: linear-gradient(135deg, #10b981, #3b82f6, #8b5cf6);
+            background-size: 200% 200%;
+            animation: gradient-shift 3s ease infinite;
+        }
+        
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Estilos mejorados para modales */
         .modal {
-            display: none; /* Oculto por defecto */
-            position: fixed; /* Posición fija en la pantalla */
-            z-index: 1000; /* Asegura que esté por encima de todo */
+            display: none;
+            position: fixed;
+            z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto; /* Habilitar scroll si es necesario */
-            background-color: rgba(0,0,0,0.4); /* Fondo semi-transparente */
-            justify-content: center; /* Centrar horizontalmente */
-            align-items: center; /* Centrar verticalmente */
-            backdrop-filter: blur(5px); /* Efecto de desenfoque */
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease-out;
         }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
         .modal-content {
             background-color: #fefefe;
-            margin: auto; /* Centrar el contenido del modal */
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            max-width: 500px;
+            margin: auto;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            max-width: 600px;
             width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
             position: relative;
+            animation: slideIn 0.3s ease-out;
+            border: 1px solid rgba(255,255,255,0.2);
         }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
         .close-button {
-            color: #aaa;
+            color: #9ca3af;
             float: right;
             font-size: 28px;
             font-weight: bold;
+            transition: all 0.2s ease;
+            position: absolute;
+            top: 16px;
+            right: 20px;
         }
+        
         .close-button:hover,
         .close-button:focus {
-            color: black;
+            color: #374151;
             text-decoration: none;
             cursor: pointer;
+            transform: scale(1.1);
+        }
+        
+        /* Estilos para formularios */
+        .form-input {
+            transition: all 0.2s ease;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Botones mejorados */
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+        
+        /* Indicadores de stock */
+        .stock-badge {
+            transition: all 0.2s ease;
+        }
+        
+        .stock-low {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        
+        .stock-medium {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+        
+        .stock-high {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
         }
     </style>
 </head>
-<body class="bg-gray-100 flex h-screen">
-    <div class="w-64 bg-gray-800 text-white flex flex-col">
-        <div class="p-4 text-2xl font-bold text-center border-b border-gray-700">
-            Gestion Inventario
-        </div>
-        <nav class="flex-1 px-2 py-4">
-            <a href="/main.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 flex h-screen font-sans">
+    <!-- Sidebar mejorada -->
+    <aside class="w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col shadow-2xl">
+        <!-- Header del sidebar -->
+        <header class="p-6 text-center border-b border-gray-700 bg-gray-900/50 backdrop-blur-sm">
+            <h1 class="text-xl font-bold">
+                <span class="bg-clip-text text-transparent gradient-text">
+                    Gestión Inventario
+                </span>
+            </h1>
+            <p class="text-xs text-gray-400 mt-1">Municipalidad de Quilleco</p>
+        </header>
+        
+        <!-- Navegación -->
+        <nav class="flex-1 px-3 py-6 space-y-1" role="navigation" aria-label="Navegación principal">
+            <a href="/main.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2 2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                 </svg>
-                Inicio
+                <span class="font-medium">Inicio</span>
             </a>
-            <a href="/articulos.html" class="flex items-center px-4 py-2 mt-2 text-white bg-gray-700 rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/articulos.html" class="nav-link flex items-center px-4 py-3 text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg" aria-current="page">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5.989A2 2 0 0115 5.01V21l-5-2-5 2V5.01A2 2 0 017.011 3z"/>
                 </svg>
-                Artículos
+                <span class="font-medium">Artículos</span>
+                <div class="ml-auto w-2 h-2 bg-blue-300 rounded-full"></div>
             </a>
-            <a href="/movimientos.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/movimientos.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                 </svg>
-                Movimientos
+                <span class="font-medium">Movimientos</span>
             </a>
-            <a href="/proveedores.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/proveedores.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h-4c-1.105 0-2-.895-2-2v-3c0-.552.448-1 1-1h4c.552 0 1 .448 1 1v3c0 1.105-.895 2-2 2zm-5-14a4 4 0 11-8 0 4 4 0 018 0zM12 21v-4"/>
                 </svg>
-                Proveedores
+                <span class="font-medium">Proveedores</span>
             </a>
-            <a href="/categorias.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/categorias.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H7a2 2 0 00-2 2v2m7-7V3"/>
                 </svg>
-                Categorías
+                <span class="font-medium">Categorías</span>
             </a>
-            <a href="/marcas.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/marcas.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2 2m-2-2l-2 2m0 0l2 2m-2-2L9 5m7 6v4m-2-2h4m-7 0a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
-                Marcas
+                <span class="font-medium">Marcas</span>
             </a>
-            <a href="/solicitudes.html" class="flex items-center px-4 py-2 mt-2 text-white bg-gray-700 rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/solicitudes.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                 </svg>
-                Solicitudes
+                <span class="font-medium">Solicitudes</span>
             </a>
-            </nav>
-        <div class="p-4 border-t border-gray-700">
-            <a href="/logout" class="flex items-center px-4 py-2 mt-2 text-red-400 hover:bg-gray-700 hover:text-red-300 rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        </nav>
+        
+        <!-- Footer del sidebar -->
+        <footer class="p-4 border-t border-gray-700 bg-gray-900/30">
+            <a href="/logout" class="nav-link flex items-center px-4 py-3 text-red-400 hover:bg-red-900/20 hover:text-red-300 rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                 </svg>
-                Cerrar Sesión
+                <span class="font-medium">Cerrar Sesión</span>
             </a>
-        </div>
-    </div>
+        </footer>
+    </aside>
 
-    <div class="flex-1 p-8 overflow-y-auto">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Gestión de Artículos</h1>
-
-        <div class="flex justify-between items-center mb-6">
-            <div class="relative w-1/3">
-                <input type="text" id="searchInput" placeholder="Buscar artículos..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline pl-10">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+    <!-- Contenido principal -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header del contenido -->
+        <header class="bg-white shadow-sm border-b border-gray-200 px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-3 rounded-xl mr-4">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Gestión de Artículos</h1>
+                        <p class="text-gray-600 mt-1">Administra el inventario de productos y materiales</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
+                    <span id="lastUpdate">Última actualización: Ahora</span>
                 </div>
             </div>
-            <button id="addArticleButton" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                Agregar Nuevo Artículo
-            </button>
-        </div>
+        </header>
 
-        <div class="bg-white shadow-md rounded-lg overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Artículo</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Ingreso</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proveedor</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marca</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="articlesTableBody" class="bg-white divide-y divide-gray-200">
-                    </tbody>
-            </table>
-        </div>
-    </div>
+        <!-- Área de contenido con scroll -->
+        <div class="flex-1 p-8 overflow-y-auto">
+            <!-- Barra de búsqueda y acciones -->
+            <section class="mb-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+                        <div class="relative flex-1 max-w-md">
+                            <label for="searchInput" class="sr-only">Buscar artículos</label>
+                            <input 
+                                type="text" 
+                                id="searchInput" 
+                                placeholder="Buscar por nombre, descripción, categoría..." 
+                                class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                autocomplete="off"
+                            >
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <button 
+                            id="addArticleButton" 
+                            class="btn-success text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 shadow-md hover:shadow-lg transition-all duration-200 flex items-center"
+                        >
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Agregar Artículo
+                        </button>
+                    </div>
+                    
+                    <!-- Leyenda de stock -->
+                    <div class="flex items-center space-x-6 mt-4 pt-4 border-t border-gray-100 text-sm text-gray-600">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-gradient-to-r from-red-500 to-red-600 rounded-full"></div>
+                            <span>Stock Bajo (≤10)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full"></div>
+                            <span>Stock Medio (11-50)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-gradient-to-r from-green-500 to-green-600 rounded-full"></div>
+                            <span>Stock Alto (>50)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
+            <!-- Tabla de artículos mejorada -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden card-shadow">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                            <tr>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Artículo</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Descripción</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Stock</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Fecha Ingreso</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Proveedor</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Categoría</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Marca</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="articlesTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Los datos se cargarán aquí dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Estado vacío -->
+                <div id="emptyState" class="hidden text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No hay artículos</h3>
+                    <p class="mt-1 text-sm text-gray-500">No se encontraron artículos que coincidan con tu búsqueda.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal para editar artículo -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <span class="close-button" id="closeEditModalButton">&times;</span>
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">Editar Artículo</h2>
-            <form id="editForm">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 pr-8">Editar Artículo</h2>
+            <form id="editForm" class="space-y-6">
                 <input type="hidden" id="editArticleId">
-                <div class="mb-4">
-                    <label for="editNombreArticulo" class="block text-gray-700 text-sm font-bold mb-2">Nombre del Artículo:</label>
-                    <input type="text" id="editNombreArticulo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="editNombreArticulo" class="block text-sm font-semibold text-gray-700 mb-2">Nombre del Artículo</label>
+                        <input type="text" id="editNombreArticulo" class="form-input w-full px-4 py-3 rounded-lg" required>
+                    </div>
+                    <div>
+                        <label for="editCantidad" class="block text-sm font-semibold text-gray-700 mb-2">Cantidad</label>
+                        <input type="number" id="editCantidad" class="form-input w-full px-4 py-3 rounded-lg" required min="0">
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <label for="editDescripcion" class="block text-gray-700 text-sm font-bold mb-2">Descripción:</label>
-                    <textarea id="editDescripcion" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                
+                <div>
+                    <label for="editDescripcion" class="block text-sm font-semibold text-gray-700 mb-2">Descripción</label>
+                    <textarea id="editDescripcion" rows="3" class="form-input w-full px-4 py-3 rounded-lg"></textarea>
                 </div>
-                <div class="mb-4">
-                    <label for="editCantidad" class="block text-gray-700 text-sm font-bold mb-2">Cantidad:</label>
-                    <input type="number" id="editCantidad" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required min="0">
-                </div>
-                <div class="mb-4">
-                    <label for="editFechaIngreso" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Ingreso:</label>
-                    <input type="date" id="editFechaIngreso" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                </div>
-                <div class="mb-4">
-                    <label for="editIdProveedor" class="block text-gray-700 text-sm font-bold mb-2">Proveedor:</label>
-                    <select id="editIdProveedor" name="id_proveedor" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="">Seleccione un Proveedor</option>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="editFechaIngreso" class="block text-sm font-semibold text-gray-700 mb-2">Fecha de Ingreso</label>
+                        <input type="date" id="editFechaIngreso" class="form-input w-full px-4 py-3 rounded-lg" required>
+                    </div>
+                    <div>
+                        <label for="editIdProveedor" class="block text-sm font-semibold text-gray-700 mb-2">Proveedor</label>
+                        <select id="editIdProveedor" class="form-input w-full px-4 py-3 rounded-lg" required>
+                            <option value="">Seleccione un Proveedor</option>
                         </select>
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <label for="editIdCategoria" class="block text-gray-700 text-sm font-bold mb-2">Categoría:</label>
-                    <select id="editIdCategoria" name="id_categoria" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="">Seleccione una Categoría</option>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="editIdCategoria" class="block text-sm font-semibold text-gray-700 mb-2">Categoría</label>
+                        <select id="editIdCategoria" class="form-input w-full px-4 py-3 rounded-lg" required>
+                            <option value="">Seleccione una Categoría</option>
                         </select>
-                </div>
-                <div class="mb-4">
-                    <label for="editIdMarca" class="block text-gray-700 text-sm font-bold mb-2">Marca:</label>
-                    <select id="editIdMarca" name="id_marca" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="">Seleccione una Marca</option>
+                    </div>
+                    <div>
+                        <label for="editIdMarca" class="block text-sm font-semibold text-gray-700 mb-2">Marca</label>
+                        <select id="editIdMarca" class="form-input w-full px-4 py-3 rounded-lg" required>
+                            <option value="">Seleccione una Marca</option>
                         </select>
+                    </div>
                 </div>
-                <div class="flex justify-end mt-6">
-                    <button type="button" id="cancelEditButton" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2">
+                
+                <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                    <button type="button" id="cancelEditButton" 
+                            class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
                         Cancelar
                     </button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    <button type="submit" 
+                            class="btn-primary px-6 py-3 text-white font-semibold rounded-lg">
                         Guardar Cambios
                     </button>
                 </div>
@@ -203,52 +420,65 @@
         </div>
     </div>
 
+    <!-- Modal para agregar artículo -->
     <div id="addModal" class="modal">
         <div class="modal-content">
             <span class="close-button" id="closeAddModalButton">&times;</span>
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">Agregar Nuevo Artículo</h2>
-            <form id="addForm">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 pr-8">Agregar Nuevo Artículo</h2>
+            <form id="addForm" class="space-y-6">
                 <p id="addFormError" class="text-red-600 text-sm mb-4 hidden"></p>
 
-                <div class="mb-4">
-                    <label for="addNombreArticulo" class="block text-gray-700 text-sm font-bold mb-2">Nombre del Artículo:</label>
-                    <input type="text" id="addNombreArticulo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="addNombreArticulo" class="block text-sm font-semibold text-gray-700 mb-2">Nombre del Artículo</label>
+                        <input type="text" id="addNombreArticulo" class="form-input w-full px-4 py-3 rounded-lg" required>
+                    </div>
+                    <div>
+                        <label for="addCantidad" class="block text-sm font-semibold text-gray-700 mb-2">Cantidad</label>
+                        <input type="number" id="addCantidad" class="form-input w-full px-4 py-3 rounded-lg" required min="0">
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <label for="addDescripcion" class="block text-gray-700 text-sm font-bold mb-2">Descripción:</label>
-                    <textarea id="addDescripcion" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                
+                <div>
+                    <label for="addDescripcion" class="block text-sm font-semibold text-gray-700 mb-2">Descripción</label>
+                    <textarea id="addDescripcion" rows="3" class="form-input w-full px-4 py-3 rounded-lg" required></textarea>
                 </div>
-                <div class="mb-4">
-                    <label for="addCantidad" class="block text-gray-700 text-sm font-bold mb-2">Cantidad:</label>
-                    <input type="number" id="addCantidad" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required min="0">
-                </div>
-                <div class="mb-4">
-                    <label for="addFechaIngreso" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Ingreso:</label>
-                    <input type="date" id="addFechaIngreso" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                </div>
-                <div class="mb-4">
-                    <label for="addIdProveedor" class="block text-gray-700 text-sm font-bold mb-2">Proveedor:</label>
-                    <select id="addIdProveedor" name="id_proveedor" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="">Seleccione un Proveedor</option>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="addFechaIngreso" class="block text-sm font-semibold text-gray-700 mb-2">Fecha de Ingreso</label>
+                        <input type="date" id="addFechaIngreso" class="form-input w-full px-4 py-3 rounded-lg" required>
+                    </div>
+                    <div>
+                        <label for="addIdProveedor" class="block text-sm font-semibold text-gray-700 mb-2">Proveedor</label>
+                        <select id="addIdProveedor" class="form-input w-full px-4 py-3 rounded-lg" required>
+                            <option value="">Seleccione un Proveedor</option>
                         </select>
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <label for="addIdCategoria" class="block text-gray-700 text-sm font-bold mb-2">Categoría:</label>
-                    <select id="addIdCategoria" name="id_categoria" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="">Seleccione una Categoría</option>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="addIdCategoria" class="block text-sm font-semibold text-gray-700 mb-2">Categoría</label>
+                        <select id="addIdCategoria" class="form-input w-full px-4 py-3 rounded-lg" required>
+                            <option value="">Seleccione una Categoría</option>
                         </select>
-                </div>
-                <div class="mb-4">
-                    <label for="addIdMarca" class="block text-gray-700 text-sm font-bold mb-2">Marca:</label>
-                    <select id="addIdMarca" name="id_marca" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="">Seleccione una Marca</option>
+                    </div>
+                    <div>
+                        <label for="addIdMarca" class="block text-sm font-semibold text-gray-700 mb-2">Marca</label>
+                        <select id="addIdMarca" class="form-input w-full px-4 py-3 rounded-lg" required>
+                            <option value="">Seleccione una Marca</option>
                         </select>
+                    </div>
                 </div>
-                <div class="flex justify-end mt-6">
-                    <button type="button" id="cancelAddButton" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2">
+                
+                <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                    <button type="button" id="cancelAddButton" 
+                            class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
                         Cancelar
                     </button>
-                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    <button type="submit" 
+                            class="btn-success px-6 py-3 text-white font-semibold rounded-lg">
                         Agregar Artículo
                     </button>
                 </div>
@@ -260,6 +490,23 @@
         const articlesTableBody = document.getElementById('articlesTableBody');
         const editModal = document.getElementById('editModal');
         const addModal = document.getElementById('addModal');
+        const emptyState = document.getElementById('emptyState');
+
+        // Función para obtener el badge de stock según la cantidad
+        function getStockBadge(cantidad) {
+            let badgeClass, text;
+            if (cantidad <= 10) {
+                badgeClass = 'stock-low';
+                text = 'Bajo';
+            } else if (cantidad <= 50) {
+                badgeClass = 'stock-medium';
+                text = 'Medio';
+            } else {
+                badgeClass = 'stock-high';
+                text = 'Alto';
+            }
+            return `<span class="stock-badge ${badgeClass} px-3 py-1 rounded-full text-xs font-semibold">${cantidad} (${text})</span>`;
+        }
 
         // Función para abrir/cerrar modales
         function openModal(modalId) {
@@ -295,7 +542,6 @@
         function closeAddModal() {
             closeModal('addModal');
             document.getElementById('addFormError').classList.add('hidden');
-
             document.getElementById('addForm').reset(); // Clear form when closing
         }
 
@@ -315,6 +561,7 @@
                 const response = await fetch('/api/articulos');
                 const articulos = await response.json();
                 displayArticulos(articulos);
+                updateLastUpdateTime();
             } catch (error) {
                 console.error('Error al obtener artículos:', error);
                 alert('Error al cargar los artículos.');
@@ -323,20 +570,53 @@
 
         function displayArticulos(articulos) {
             articlesTableBody.innerHTML = '';
+            
+            if (articulos.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
             articulos.forEach(articulo => {
                 const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition-colors';
                 row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${articulo.id_articulo}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${articulo.nombre_articulo}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${articulo.descripcion || 'N/A'}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${articulo.stock}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatFecha(articulo.fecha_ingreso)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${articulo.nombre_proveedor || 'N/A'}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${articulo.nombre_categoria || 'N/A'}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${articulo.nombre_marca || 'N/A'}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button onclick="editArticle(${articulo.id_articulo})" class="text-blue-600 hover:text-blue-900 mr-2">Editar</button>
-                        <button onclick="deleteArticle(${articulo.id_articulo}, '${articulo.nombre_articulo}')" class="text-red-600 hover:text-red-900">Eliminar</button>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        #${articulo.id_articulo}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                        ${articulo.nombre_articulo}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-600 max-w-xs truncate" title="${articulo.descripcion || 'Sin descripción'}">
+                        ${articulo.descripcion || '<span class="text-gray-400 italic">Sin descripción</span>'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        ${getStockBadge(articulo.stock)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${formatFecha(articulo.fecha_ingreso)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        ${articulo.nombre_proveedor || '<span class="text-gray-400">N/A</span>'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        ${articulo.nombre_categoria || '<span class="text-gray-400">N/A</span>'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        ${articulo.nombre_marca || '<span class="text-gray-400">N/A</span>'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button onclick="editArticle(${articulo.id_articulo})" 
+                                    class="text-blue-600 hover:text-blue-800 font-medium transition-colors">
+                                Editar
+                            </button>
+                            <button onclick="deleteArticle(${articulo.id_articulo}, '${articulo.nombre_articulo}')" 
+                                    class="text-red-600 hover:text-red-800 font-medium transition-colors">
+                                Eliminar
+                            </button>
+                        </div>
                     </td>
                 `;
                 articlesTableBody.appendChild(row);
@@ -346,15 +626,33 @@
         function filtrarArticulosTabla() {
             const searchText = document.getElementById('searchInput').value.toLowerCase();
             const rows = articlesTableBody.getElementsByTagName('tr');
+            let visibleRows = 0;
 
             Array.from(rows).forEach(row => {
                 const textContent = row.textContent.toLowerCase();
                 if (textContent.includes(searchText)) {
                     row.style.display = '';
+                    visibleRows++;
                 } else {
                     row.style.display = 'none';
                 }
             });
+
+            // Mostrar estado vacío si no hay resultados
+            if (visibleRows === 0 && searchText.length > 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+        }
+
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('es-ES', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            document.getElementById('lastUpdate').textContent = `Última actualización: ${timeString}`;
         }
 
         // --- Funciones para interacciones con la API ---
@@ -376,7 +674,7 @@
                     const option = document.createElement('option');
                     option.value = item[idKey]; // The ID to be sent to the server
                     option.textContent = item[nameKey]; // The name to display
-                    if (selectedId !== null && item[idKey] === selectedId) {
+                    if (selectedId !== null && String(item[idKey]) === String(selectedId)) {
                         option.selected = true; // Select the current item in edit mode
                     }
                     selectElement.appendChild(option);
@@ -388,211 +686,193 @@
             }
         }
 
-
         // Manejar el submit del formulario para AGREGAR un artículo
-async function handleAddSubmit(event) {
-    event.preventDefault();
+        async function handleAddSubmit(event) {
+            event.preventDefault();
 
-    const errorElement = document.getElementById('addFormError');
-    errorElement.classList.add('hidden');
+            const nombre = document.getElementById('addNombreArticulo').value.trim();
+            const descripcion = document.getElementById('addDescripcion').value.trim();
+            const cantidad = parseInt(document.getElementById('addCantidad').value);
+            const categoria = parseInt(document.getElementById('addIdCategoria').value);
+            const proveedor = parseInt(document.getElementById('addIdProveedor').value);
+            const fecha_adquisicion = document.getElementById('addFechaIngreso').value;
+            const marca = parseInt(document.getElementById('addIdMarca').value);
 
-    // Obtener los valores
-    const nombre_articulo = document.getElementById('addNombreArticulo')?.value.trim();
-    const descripcion = document.getElementById('addDescripcion')?.value.trim();
-    const cantidadInput = document.getElementById('addCantidad');
-    const cantidad = cantidadInput?.valueAsNumber;
-    const fecha_ingreso = document.getElementById('addFechaIngreso')?.value;
-    const id_proveedor = document.getElementById('addIdProveedor')?.value;
-    const id_categoria = document.getElementById('addIdCategoria')?.value;
-    const id_marca = document.getElementById('addIdMarca')?.value;
+            if (!nombre) {
+                mostrarError('addFormError', 'El nombre del artículo es obligatorio.');
+                return;
+            }
+            if (isNaN(cantidad)) {
+                mostrarError('addFormError', 'La cantidad debe ser un número válido.');
+                return;
+            }
+            if (isNaN(categoria)) {
+                mostrarError('addFormError', 'Debe seleccionar una categoría.');
+                return;
+            }
+            if (isNaN(proveedor)) {
+                mostrarError('addFormError', 'Debe seleccionar un proveedor.');
+                return;
+            }
+            if (!fecha_adquisicion) {
+                mostrarError('addFormError', 'Debe ingresar la fecha de ingreso.');
+                return;
+            }
+            if (isNaN(marca)) {
+                mostrarError('addFormError', 'Debe seleccionar una marca.');
+                return;
+            }
 
-    // Log para debug
-    console.log({
-        nombre_articulo, descripcion, cantidad, fecha_ingreso, id_proveedor, id_categoria, id_marca
-    });
+            ocultarError('addFormError');
 
-    // Validar
-    if (
-        !nombre_articulo ||
-        isNaN(cantidad) || cantidad < 0 ||
-        !fecha_ingreso ||
-        !id_proveedor || !id_categoria || !id_marca
-    ) {
-        errorElement.textContent = 'Completa todos los campos correctamente.';
-        errorElement.classList.remove('hidden');
-        return;
-    }
+            try {
+                const response = await fetch('/api/articulos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nombre,
+                        descripcion,
+                        cantidad,
+                        categoria,
+                        proveedor,
+                        fecha_adquisicion,
+                        marca
+                    })
+                });
 
-    try {
-        const response = await fetch('/api/articulos', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                nombre_articulo,
-                descripcion,
-                cantidad,
-                fecha_ingreso,
-                id_proveedor,
-                id_categoria,
-                id_marca
-            })
-        });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    mostrarError('addFormError', errorData.error || 'Error al agregar artículo');
+                    return;
+                }
 
-        const result = await response.json();
+                const result = await response.json();
+                console.log('Artículo agregado con ID:', result.id);
 
-        if (!response.ok) {
-            errorElement.textContent = result.error || 'Error al agregar artículo.';
-            errorElement.classList.remove('hidden');
-            return;
+                document.getElementById('addForm').reset();
+                closeAddModal();
+                fetchArticulos();
+
+            } catch (error) {
+                mostrarError('addFormError', 'Error de red o servidor: ' + error.message);
+            }
         }
 
-        closeAddModal();
-        fetchArticulos();
-
-    } catch (error) {
-        console.error('Error en el envío:', error);
-        errorElement.textContent = 'Error inesperado. Intenta nuevamente.';
-        errorElement.classList.remove('hidden');
-    }
-}
-document.getElementById('addForm').addEventListener('submit', handleAddSubmit);
-
-
-
-
-// Función para cargar datos de un artículo para edición
-async function editArticle(id) {
-    try {
-        const response = await fetch(`/api/articulos`); // Fetch all to find the specific one locally
-        const articulos = await response.json();
-        const articulo = articulos.find(a => a.id_articulo === id);
-
-        if (articulo) {
-            document.getElementById('editArticleId').value = articulo.id_articulo;
-            document.getElementById('editNombreArticulo').value = articulo.nombre_articulo;
-            document.getElementById('editDescripcion').value = articulo.descripcion || '';
-            document.getElementById('editCantidad').value = articulo.stock; // ¡CORREGIDO: aquí debes usar .stock!
-            document.getElementById('editFechaIngreso').value = formatFecha(articulo.fecha_ingreso);
-
-            // Populate dropdowns and set selected value for editing
-            // Asegúrate de que populateDropdown esté definido y funcione correctamente
-            await populateDropdown('/api/proveedores', 'editIdProveedor', 'id_proveedor', 'nombre_proveedor', articulo.id_proveedor);
-            await populateDropdown('/api/categorias', 'editIdCategoria', 'id_categoria', 'nombre_categoria', articulo.id_categoria);
-            await populateDropdown('/api/marcas', 'editIdMarca', 'id_marca', 'nombre_marca', articulo.id_marca);
-
-            openEditModal();
-        } else {
-            alert('Artículo no encontrado.');
+        // Funciones para mostrar/ocultar errores
+        function mostrarError(elementId, mensaje) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.textContent = mensaje;
+                el.classList.remove('hidden');
+            }
         }
-    } catch (error) {
-        console.error('Error al cargar datos para edición:', error);
-        alert('Error al cargar datos del artículo para editar.');
-    }
-}
-async function loadArticleForEdit(id) {
-    try {
-        const response = await fetch(`/api/articulos/${id}`);
-        if (!response.ok) {
-            const errorData = await response.json();
-            alert(errorData.error || 'Error al cargar el artículo.');
-            return;
-        }
-        const article = await response.json();
-
-        // Rellenar los campos del formulario
-        document.getElementById('edit-id').value = article.id_articulo;
-        document.getElementById('edit-nombre_articulo').value = article.nombre_articulo;
-        document.getElementById('edit-descripcion').value = article.descripcion || ''; // Manejar nulos
-        document.getElementById('edit-cantidad').value = article.cantidad;
-        // Si fecha_ingreso es un campo de input type="date", asegúrate de que el formato sea 'YYYY-MM-DD'
-        document.getElementById('edit-fecha_ingreso').value = article.fecha_ingreso ? article.fecha_ingreso.split('T')[0] : '';
         
-        // ¡¡ESTO ES CRÍTICO!! Asegúrate de que los SELECTs estén seleccionando la opción correcta.
-        // Esto solo funcionará si las opciones (proveedores, categorías, marcas) ya están cargadas en los <select>
-        document.getElementById('edit-id-proveedor').value = article.id_proveedor;
-        document.getElementById('edit-id-categoria').value = article.id_categoria;
-        document.getElementById('edit-id-marca').value = article.id_marca;
-
-        openEditModal(); // Abre el modal después de cargar los datos
-    } catch (error) {
-        console.error('Error al cargar artículo para edición:', error);
-        alert('Error al cargar datos del artículo para edición. Intenta de nuevo.');
-    }
-}
-
-        // Manejar el submit del formulario para EDITAR un artículo
-async function handleEditSubmit(event) {
-    event.preventDefault(); // Evita el envío por defecto del formulario
-
-    const id = document.getElementById('edit-id').value;
-    const data = {
-        nombre_articulo: document.getElementById('edit-nombre_articulo').value,
-        descripcion: document.getElementById('edit-descripcion').value,
-        cantidad: parseInt(document.getElementById('edit-cantidad').value),
-        
-        // ¡¡ASEGURATE DE QUE ESTOS VALORES SEAN NÚMEROS VÁLIDOS!!
-        // Si el valor del select es "" o no es un número, parseInt() devolverá NaN.
-        id_proveedor: parseInt(document.getElementById('edit-id-proveedor').value),
-        id_categoria: parseInt(document.getElementById('edit-id-categoria').value),
-        id_marca: parseInt(document.getElementById('edit-id-marca').value),
-        
-        fecha_ingreso: document.getElementById('edit-fecha_ingreso').value
-    };
-
-    // --- VALIDACIONES ADICIONALES EN EL FRONTEND (RECOMENDADO) ---
-    // Si la descripción puede ser opcional (NULLable en DB) y el input es vacío, cámbialo a null
-    if (data.descripcion === '') {
-        data.descripcion = null;
-    }
-
-    // Validar que los IDs de FK no sean NaN (Not-a-Number)
-    if (isNaN(data.id_proveedor)) {
-        alert('Por favor, selecciona un proveedor válido.');
-        return;
-    }
-    if (isNaN(data.id_categoria)) {
-        alert('Por favor, selecciona una categoría válida.');
-        return;
-    }
-    if (isNaN(data.id_marca)) {
-        alert('Por favor, selecciona una marca válida.');
-        return;
-    }
-    if (isNaN(data.cantidad) || data.cantidad <= 0) {
-        alert('La cantidad debe ser un número válido y mayor que cero.');
-        return;
-    }
-    if (!data.nombre_articulo.trim()) {
-        alert('El nombre del artículo no puede estar vacío.');
-        return;
-    }
-    // --- FIN VALIDACIONES ---
-
-    try {
-        const response = await fetch(`/api/articulos/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-            alert(result.message);
-            closeEditModal();
-            cargarArticulos(); // Recargar la tabla de artículos
-        } else {
-            // Manejar errores específicos de la respuesta del servidor
-            const errorData = await response.json();
-            alert(errorData.error || 'Error al actualizar artículo.');
-            console.error('Detalles del error del servidor:', errorData.details);
+        function ocultarError(elementId) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.textContent = '';
+                el.classList.add('hidden');
+            }
         }
-    } catch (error) {
-        console.error('Error al enviar la actualización:', error);
-        alert('Error de conexión o del servidor al actualizar el artículo. Intenta nuevamente.');
-    }
-}
+
+        // Función para cargar un artículo y llenar el formulario de edición
+        async function editArticle(id) {
+            try {
+                const response = await fetch(`/api/articulos/${id}`);
+                if (!response.ok) {
+                    alert('Error al obtener el artículo.');
+                    return;
+                }
+                const articulo = await response.json();
+
+                if (articulo) {
+                    document.getElementById('editArticleId').value = articulo.id_articulo;
+                    document.getElementById('editNombreArticulo').value = articulo.nombre_articulo;
+                    document.getElementById('editDescripcion').value = articulo.descripcion || '';
+                    document.getElementById('editCantidad').value = articulo.cantidad;
+                    document.getElementById('editFechaIngreso').value = formatFecha(articulo.fecha_ingreso);
+
+                    // Carga y selecciona la opción correcta en cada dropdown
+                    await Promise.all([
+                        populateDropdown('/api/proveedores', 'editIdProveedor', 'id_proveedor', 'nombre_proveedor', articulo.id_proveedor),
+                        populateDropdown('/api/categorias', 'editIdCategoria', 'id_categoria', 'nombre_categoria', articulo.id_categoria),
+                        populateDropdown('/api/marcas', 'editIdMarca', 'id_marca', 'nombre_marca', articulo.id_marca),
+                    ]);
+
+                    openEditModal();
+                } else {
+                    alert('Artículo no encontrado.');
+                }
+            } catch (error) {
+                console.error('Error al cargar datos para edición:', error);
+                alert('Error al cargar datos del artículo para editar.');
+            }
+        }
+
+        // Función para manejar el submit del formulario de edición
+        async function handleEditSubmit(event) {
+            event.preventDefault();
+
+            const id = document.getElementById('editArticleId').value;
+
+            const data = {
+                nombre: document.getElementById('editNombreArticulo').value.trim(),
+                descripcion: document.getElementById('editDescripcion').value.trim() || null,
+                cantidad: parseInt(document.getElementById('editCantidad').value),
+                proveedor: parseInt(document.getElementById('editIdProveedor').value),
+                categoria: parseInt(document.getElementById('editIdCategoria').value),
+                marca: parseInt(document.getElementById('editIdMarca').value),
+                fecha_adquisicion: document.getElementById('editFechaIngreso').value
+            };
+
+            // Validaciones básicas
+            if (!data.nombre) {
+                alert('El nombre del artículo no puede estar vacío.');
+                return;
+            }
+            if (isNaN(data.cantidad)) {
+                alert('La cantidad debe ser un número válido.');
+                return;
+            }
+            if (isNaN(data.proveedor)) {
+                alert('Por favor, selecciona un proveedor válido.');
+                return;
+            }
+            if (isNaN(data.categoria)) {
+                alert('Por favor, selecciona una categoría válida.');
+                return;
+            }
+            if (isNaN(data.marca)) {
+                alert('Por favor, selecciona una marca válida.');
+                return;
+            }
+            if (!data.fecha_adquisicion) {
+                alert('Debe ingresar la fecha de ingreso.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/articulos/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(result.message);
+                    closeEditModal();
+                    fetchArticulos();
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || 'Error al actualizar artículo.');
+                    console.error('Detalles del error del servidor:', errorData);
+                }
+            } catch (error) {
+                console.error('Error al enviar la actualización:', error);
+                alert('Error de conexión o del servidor al actualizar el artículo. Intenta nuevamente.');
+            }
+        }
 
         async function deleteArticle(id, nombre) {
             if (confirm(`¿Estás seguro de que quieres eliminar el artículo "${nombre}" (ID: ${id})? Esta acción también registrará un movimiento de eliminación.`)) {
@@ -603,7 +883,7 @@ async function handleEditSubmit(event) {
                     const result = await response.json();
                     if (response.ok) {
                         alert(result.message);
-                        fetchArticulos(); // Recargar la tabla
+                        fetchArticulos();
                     } else {
                         console.error('Error al eliminar artículo:', result.error);
                         alert(`Error al eliminar artículo: ${result.error}`);
@@ -618,11 +898,6 @@ async function handleEditSubmit(event) {
         // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
             fetchArticulos();
-            // Initial population of dropdowns might be useful if the modal opens directly on page load
-            // or if it's a single page app where modal content isn't destroyed
-            // populateDropdown('/api/proveedores', 'addIdProveedor', 'id_proveedor', 'nombre_proveedor');
-            // populateDropdown('/api/categorias', 'addIdCategoria', 'id_categoria', 'nombre_categoria');
-            // populateDropdown('/api/marcas', 'addIdMarca', 'id_marca', 'nombre_marca');
         });
 
         document.getElementById('searchInput').addEventListener('keyup', filtrarArticulosTabla);
@@ -638,9 +913,9 @@ async function handleEditSubmit(event) {
         document.getElementById('cancelAddButton').addEventListener('click', closeAddModal);
         document.getElementById('addForm').addEventListener('submit', handleAddSubmit);
 
-        // Cerrar modales al hacer clic fuera (solo los modales de artículos)
+        // Cerrar modales al hacer clic fuera
         window.addEventListener('click', (event) => {
-            const modals = ['editModal', 'addModal']; // Solo los modales de artículos
+            const modals = ['editModal', 'addModal'];
             modals.forEach(modalId => {
                 const modal = document.getElementById(modalId);
                 if (modal && event.target === modal) {
@@ -650,6 +925,8 @@ async function handleEditSubmit(event) {
             });
         });
 
+        // Actualizar la hora cada minuto
+        setInterval(updateLastUpdateTime, 60000);
     </script>
 </body>
 </html>

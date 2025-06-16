@@ -10,7 +10,7 @@ const dbConfig = {
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'inventario_muni',
+    database: 'inventarioMuni',
 };
 
 const pool = mysql.createPool(dbConfig);
@@ -57,30 +57,29 @@ app.get('/', (req, res) => {
 
 // Endpoint para el proceso de login (MODIFICADO para obtener nombre_rol)
 app.post('/login', async (req, res) => {
-    const { usuario, contrasena } = req.body;
+  const { usuario, contrasena } = req.body;
 
-    try {
-        const [rows] = await pool.execute(
-            `SELECT u.id_usuario, u.nombre_usuario, r.nombre_rol
-             FROM Usuarios u
-             JOIN Roles r ON u.id_rol = r.id_rol
-             WHERE u.nombre_usuario = ? AND u.contrasena = ?`,
-            [usuario, contrasena]
-        );
+  try {
+    const [rows] = await pool.execute(
+      `SELECT u.id_usuario, u.nombre_usuario, r.nombre_rol
+       FROM Usuarios u
+       JOIN Roles r ON u.id_rol = r.id_rol
+       WHERE u.nombre_usuario = ? AND u.contrasena = ?`,
+      [usuario, contrasena]
+    );
 
-        if (rows.length > 0) {
-            const user = rows[0];
-            req.session.userId = user.id_usuario;
-            req.session.userRoleName = user.nombre_rol;
-            // ¡CAMBIA ESTA LÍNEA!
-            res.json({ message: 'Login exitoso', redirectTo: '/main.html', userId: user.id_usuario, userRoleName: user.nombre_rol });
-        } else {
-            res.status(401).json({ error: 'Credenciales inválidas.' });
-        }
-    } catch (error) {
-        console.error('Error en el login:', error);
-        res.status(500).json({ error: 'Error interno del servidor.' });
+    if (rows.length > 0) {
+      const user = rows[0];
+      req.session.userId = user.id_usuario;          // <-- guarda aquí
+      req.session.userRoleName = user.nombre_rol;
+      res.json({ message: 'Login exitoso', redirectTo: '/main.html', userId: user.id_usuario, userRoleName: user.nombre_rol });
+    } else {
+      res.status(401).json({ error: 'Credenciales inválidas.' });
     }
+  } catch (error) {
+    console.error('Error en el login:', error);
+    res.status(500).json({ error: 'Error interno del servidor.' });
+  }
 });
 
 // Ruta para cerrar sesión
@@ -94,7 +93,265 @@ app.post('/logout', (req, res) => {
     });
 });
 
-// --- RUTAS DE LA API PARA ARTÍCULOS ---
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// app.get('/api/categorias') - Obtener todas las categorías
+app.get('/api/categorias', async (req, res) => {
+    try {
+        const [rows] = await pool.execute('SELECT id_categoria, nombre_categoria FROM categoriaarticulos'); // Usamos el nombre real de tu tabla
+        res.json(rows);
+    } catch (error) {
+        console.error('Error al obtener categorías:', error);
+        res.status(500).send('Error en el servidor al obtener categorías.');
+    }
+});
+// POST /api/categorias - Agregar nueva categoría
+app.post('/api/categorias', async (req, res) => {
+    const { nombre_categoria } = req.body;
+
+    if (!nombre_categoria) {
+        return res.status(400).json({ error: 'El nombre de la categoría es obligatorio.' });
+    }
+
+    try {
+        const [result] = await pool.execute(
+            'INSERT INTO categoriaarticulos (nombre_categoria) VALUES (?)',
+            [nombre_categoria]
+        );
+        res.status(201).json({ message: 'Categoría agregada correctamente.', id: result.insertId });
+    } catch (error) {
+        console.error('Error al agregar categoría:', error);
+        res.status(500).json({ error: 'Error en el servidor al agregar categoría.' });
+    }
+});
+// PUT /api/categorias/:id - Actualizar nombre de categoría
+app.put('/api/categorias/:id', async (req, res) => {
+    const { id } = req.params;
+    const { nombre_categoria } = req.body;
+
+    if (!nombre_categoria) {
+        return res.status(400).json({ error: 'El nombre de la categoría es obligatorio.' });
+    }
+
+    try {
+        const [result] = await pool.execute(
+            'UPDATE categoriaarticulos SET nombre_categoria = ? WHERE id_categoria = ?',
+            [nombre_categoria, id]
+        );
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Categoría no encontrada.' });
+        }
+        res.json({ message: 'Categoría actualizada correctamente.' });
+    } catch (error) {
+        console.error('Error al actualizar categoría:', error);
+        res.status(500).json({ error: 'Error en el servidor al actualizar categoría.' });
+    }
+});
+
+// DELETE /api/categorias/:id - Eliminar categoría
+app.delete('/api/categorias/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [result] = await pool.execute(
+            'DELETE FROM categoriaarticulos WHERE id_categoria = ?',
+            [id]
+        );
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Categoría no encontrada.' });
+        }
+        res.json({ message: 'Categoría eliminada correctamente.' });
+    } catch (error) {
+        console.error('Error al eliminar categoría:', error);
+        res.status(500).json({ error: 'Error en el servidor al eliminar categoría.' });
+    }
+});
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// app.get('/api/proveedores') - Obtener todos los proveedores
+app.get('/api/proveedores', async (req, res) => {
+    try {
+        const [rows] = await pool.execute('SELECT id_proveedor, nombre_proveedor, contacto, telefono, direccion FROM proveedores'); // Usamos el nombre real de tu tabla
+        res.json(rows);
+    } catch (error) {
+        console.error('Error al obtener proveedores:', error);
+        res.status(500).send('Error en el servidor al obtener proveedores.');
+    }
+});
+// app.get('/api/proveedores/:id') - Obtener un proveedor por ID
+app.get('/api/proveedores/:id', async (req, res) => {
+    const id = req.params.id;
+    try {
+        const [rows] = await pool.execute(
+            'SELECT id_proveedor, nombre_proveedor, contacto, telefono, direccion FROM proveedores WHERE id_proveedor = ?',
+            [id]
+        );
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Proveedor no encontrado' });
+        }
+        res.json(rows[0]);
+    } catch (error) {
+        console.error('Error al obtener proveedor por ID:', error);
+        res.status(500).json({ error: 'Error en el servidor' });
+    }
+});
+//Agregar Proveedores
+app.post('/api/proveedores', async (req, res) => {
+  try {
+    const { nombre_proveedor, contacto, telefono, direccion } = req.body;
+
+    if (!nombre_proveedor) {
+      return res.status(400).json({ error: 'El nombre del proveedor es obligatorio' });
+    }
+
+    const [result] = await pool.execute(
+      `INSERT INTO Proveedores (nombre_proveedor, contacto, telefono, direccion) VALUES (?, ?, ?, ?)`,
+      [nombre_proveedor, contacto || null, telefono || null, direccion || null]
+    );
+
+    res.status(201).json({ message: 'Proveedor agregado correctamente', id_proveedor: result.insertId });
+  } catch (error) {
+    console.error('Error al agregar proveedor:', error);
+    res.status(500).json({ error: 'Error en el servidor al agregar proveedor' });
+  }
+});
+// app.put('/api/proveedores/:id') - Actualizar un proveedor
+app.put('/api/proveedores/:id', async (req, res) => {
+  const id = req.params.id;
+  const { nombre_proveedor, contacto, telefono, direccion } = req.body;
+
+  try {
+    const [result] = await pool.execute(
+      `UPDATE proveedores SET nombre_proveedor = ?, contacto = ?, telefono = ?, direccion = ? WHERE id_proveedor = ?`,
+      [nombre_proveedor, contacto, telefono, direccion, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Proveedor no encontrado.' });
+    }
+
+    res.json({ message: 'Proveedor actualizado correctamente.' });
+  } catch (error) {
+    console.error('Error al actualizar proveedor:', error);
+    res.status(500).json({ error: 'Error en el servidor al actualizar proveedor.' });
+  }
+});
+// app.delete('/api/proveedores/:id') - Eliminar proveedor
+app.delete('/api/proveedores/:id', async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const [result] = await pool.execute(
+      'DELETE FROM proveedores WHERE id_proveedor = ?',
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Proveedor no encontrado.' });
+    }
+
+    res.json({ message: 'Proveedor eliminado correctamente.' });
+  } catch (error) {
+    console.error('Error al eliminar proveedor:', error);
+    res.status(500).json({ error: 'Error en el servidor al eliminar proveedor.' });
+  }
+});
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// app.get('/api/marcas') - Obtener todas las marcas
+app.get('/api/marcas', async (req, res) => {
+    try {
+        const [rows] = await pool.execute('SELECT id_marca, nombre_marca FROM marcaarticulos'); // Usamos el nombre real de tu tabla
+        res.json(rows);
+    } catch (error) {
+        console.error('Error al obtener marcas:', error);
+        res.status(500).send('Error en el servidor al obtener marcas.');
+    }
+});
+
+// POST /api/marcas - Agregar una nueva marca
+app.post('/api/marcas', async (req, res) => {
+    const { nombre_marca } = req.body;
+
+    if (!nombre_marca) {
+        return res.status(400).json({ error: 'El nombre de la marca es obligatorio.' });
+    }
+
+    try {
+        const [result] = await pool.execute(
+            'INSERT INTO marcaarticulos (nombre_marca) VALUES (?)',
+            [nombre_marca]
+        );
+        res.status(201).json({ message: 'Marca agregada correctamente.', id: result.insertId });
+    } catch (error) {
+        console.error('Error al agregar marca:', error);
+        res.status(500).json({ error: 'Error en el servidor al agregar marca.' });
+    }
+});
+
+// PUT /api/marcas/:id - Actualizar una marca
+app.put('/api/marcas/:id', async (req, res) => {
+    const { id } = req.params;
+    const { nombre_marca } = req.body;
+
+    if (!nombre_marca) {
+        return res.status(400).json({ error: 'El nombre de la marca es obligatorio.' });
+    }
+
+    try {
+        const [result] = await pool.execute(
+            'UPDATE marcaarticulos SET nombre_marca = ? WHERE id_marca = ?',
+            [nombre_marca, id]
+        );
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Marca no encontrada.' });
+        }
+        res.json({ message: 'Marca actualizada correctamente.' });
+    } catch (error) {
+        console.error('Error al actualizar marca:', error);
+        res.status(500).json({ error: 'Error en el servidor al actualizar marca.' });
+    }
+});
+
+// DELETE /api/marcas/:id - Eliminar una marca
+app.delete('/api/marcas/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [result] = await pool.execute(
+            'DELETE FROM marcaarticulos WHERE id_marca = ?',
+            [id]
+        );
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Marca no encontrada.' });
+        }
+        res.json({ message: 'Marca eliminada correctamente.' });
+    } catch (error) {
+        console.error('Error al eliminar marca:', error);
+        res.status(500).json({ error: 'Error en el servidor al eliminar marca.' });
+    }
+});
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// app.get('/api/articulos/:id') - Obtener un artículo por ID
+app.get('/api/articulos/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [rows] = await pool.execute(
+            'SELECT * FROM articulos WHERE id_articulo = ?',
+            [id]
+        );
+        if (rows.length > 0) {
+            res.json(rows[0]);
+        } else {
+            res.status(404).json({ error: 'Artículo no encontrado.' });
+        }
+    } catch (error) {
+        console.error('Error al obtener artículo por ID:', error);
+        res.status(500).send('Error en el servidor al obtener el artículo.');
+    }
+});
+
 
 // app.get('/api/articulos') - Obtener todos los artículos
 app.get('/api/articulos', async (req, res) => {
@@ -104,14 +361,14 @@ app.get('/api/articulos', async (req, res) => {
                 a.id_articulo,
                 a.nombre_articulo,
                 a.descripcion,
-                a.cantidad AS stock, -- Alias 'cantidad' como 'stock' para el frontend
-                a.fecha_ingreso,     -- Asumiendo que esta columna existe
+                a.cantidad AS stock,
+                a.fecha_ingreso,
                 a.id_proveedor,
-                p.nombre_proveedor,  -- Nombre del proveedor
+                p.nombre_proveedor,
                 a.id_categoria,
-                c.nombre_categoria,  -- Nombre de la categoría
+                c.nombre_categoria,
                 a.id_marca,
-                ma.nombre_marca      -- Nombre de la marca
+                ma.nombre_marca
             FROM
                 articulos a
             LEFT JOIN
@@ -128,423 +385,509 @@ app.get('/api/articulos', async (req, res) => {
         res.status(500).send('Error en el servidor al obtener artículos.');
     }
 });
-// app.get('/api/categorias') - Obtener todas las categorías
-app.get('/api/categorias', async (req, res) => {
-    try {
-        const [rows] = await pool.execute('SELECT id_categoria, nombre_categoria FROM categoriaarticulos'); // Usamos el nombre real de tu tabla
-        res.json(rows);
-    } catch (error) {
-        console.error('Error al obtener categorías:', error);
-        res.status(500).send('Error en el servidor al obtener categorías.');
-    }
-});
-
-// app.get('/api/proveedores') - Obtener todos los proveedores
-app.get('/api/proveedores', async (req, res) => {
-    try {
-        const [rows] = await pool.execute('SELECT id_proveedor, nombre_proveedor FROM proveedores'); // Usamos el nombre real de tu tabla
-        res.json(rows);
-    } catch (error) {
-        console.error('Error al obtener proveedores:', error);
-        res.status(500).send('Error en el servidor al obtener proveedores.');
-    }
-});
-
-// app.get('/api/marcas') - Obtener todas las marcas
-app.get('/api/marcas', async (req, res) => {
-    try {
-        const [rows] = await pool.execute('SELECT id_marca, nombre_marca FROM marcaarticulos'); // Usamos el nombre real de tu tabla
-        res.json(rows);
-    } catch (error) {
-        console.error('Error al obtener marcas:', error);
-        res.status(500).send('Error en el servidor al obtener marcas.');
-    }
-});
-
-// app.get('/api/articulos/:id') - Obtener un artículo por ID
-app.get('/api/articulos/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        const [rows] = await pool.execute('SELECT * FROM articulos WHERE id_articulo = ?', [id]);
-        if (rows.length > 0) {
-            res.json(rows[0]);
-        } else {
-            res.status(404).json({ error: 'Artículo no encontrado.' });
-        }
-    } catch (error) {
-        console.error('Error al obtener artículo por ID:', error);
-        res.status(500).send('Error en el servidor al obtener el artículo.');
-    }
-});
 
 // app.post('/api/articulos') - Crear un nuevo artículo
 app.post('/api/articulos', async (req, res) => {
     const {
-        nombre_articulo,
+        nombre,
         descripcion,
         cantidad,
-        id_proveedor,
-        id_categoria,
-        id_marca,
-        fecha_ingreso
+        categoria,
+        proveedor,
+        fecha_adquisicion,
+        marca
     } = req.body;
 
+    const finalNombreArticulo = (nombre !== undefined && String(nombre).trim() !== '') ? String(nombre).trim() : null;
+    const finalDescripcion = (descripcion !== undefined && String(descripcion).trim() !== '') ? String(descripcion).trim() : null;
+    const finalCantidad = (cantidad !== undefined && cantidad !== null && !isNaN(Number(cantidad))) ? parseInt(cantidad) : null;
+    const finalIdCategoria = (categoria !== undefined && categoria !== null && !isNaN(Number(categoria))) ? parseInt(categoria) : null;
+    const finalIdProveedor = (proveedor !== undefined && proveedor !== null && !isNaN(Number(proveedor))) ? parseInt(proveedor) : null;
+    const finalFechaIngreso = (fecha_adquisicion !== undefined && String(fecha_adquisicion).trim() !== '') ? String(fecha_adquisicion).trim() : null;
+    const finalIdMarca = (marca !== undefined && marca !== null && !isNaN(Number(marca))) ? parseInt(marca) : null;
 
-    if (nombre_articulo === undefined || cantidad === undefined ||
-        id_proveedor === undefined || id_categoria === undefined || id_marca === undefined) {
-        return res.status(400).json({ error: 'Faltan campos obligatorios para crear el artículo. Asegúrate de enviar nombre_articulo, cantidad, id_proveedor, id_categoria, id_marca.' });
+    // Usuario fijo por ahora (reemplazar con el id del usuario logueado cuando tengas autenticación)
+    const idUsuarioAccion = 2;
+
+    if (!finalNombreArticulo) {
+        return res.status(400).json({ error: 'El nombre del artículo es obligatorio.' });
     }
-
-
-    const finalDescripcion = descripcion === '' || descripcion === undefined ? null : descripcion;
-
-
+    if (finalCantidad === null || isNaN(finalCantidad) || finalCantidad <= 0) {
+        return res.status(400).json({ error: 'La cantidad del artículo es obligatoria y debe ser un número válido mayor que 0.' });
+    }
+    if (finalIdCategoria === null || isNaN(finalIdCategoria)) {
+        return res.status(400).json({ error: 'La categoría del artículo es obligatoria.' });
+    }
+    if (finalIdProveedor === null || isNaN(finalIdProveedor)) {
+        return res.status(400).json({ error: 'El proveedor del artículo es obligatorio.' });
+    }
+    if (finalIdMarca === null || isNaN(finalIdMarca)) {
+        return res.status(400).json({ error: 'La marca del artículo es obligatoria.' });
+    }
+    if (!finalFechaIngreso) {
+        return res.status(400).json({ error: 'La fecha de ingreso del artículo es obligatoria.' });
+    }
 
     try {
+        // Insertar artículo
         const [result] = await pool.execute(
-            `INSERT INTO articulos (
-                nombre_articulo,
-                descripcion,
-                cantidad,
-                id_proveedor,
-                id_categoria,
-                id_marca,
-                fecha_ingreso
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)`, // Hay 7 columnas, así que 7 placeholders '?'
+            `INSERT INTO Articulos 
+            (nombre_articulo, descripcion, cantidad, id_categoria, id_proveedor, fecha_ingreso, id_marca) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
             [
-                nombre_articulo,
-                finalDescripcion, // Usamos la descripción procesada
-                cantidad,
-                id_proveedor,     // Son NOT NULL en DB, se espera un valor
-                id_categoria,     // Son NOT NULL en DB, se espera un valor
-                id_marca,         // Son NOT NULL en DB, se espera un valor
-                fecha_ingreso     // Usamos la fecha que viene del frontend
+                finalNombreArticulo,
+                finalDescripcion,
+                finalCantidad,
+                finalIdCategoria,
+                finalIdProveedor,
+                finalFechaIngreso,
+                finalIdMarca
             ]
         );
-        res.status(201).json({ message: 'Artículo creado exitosamente', id: result.insertId });
-    } catch (error) {
-        console.error('Error al crear artículo:', error);
-        let userMessage = 'Error inesperado al crear artículo. Intenta nuevamente.';
-        if (error.code === 'ER_DUP_ENTRY') {
-            userMessage = 'Error: Ya existe un artículo con un valor duplicado (ej. nombre único si lo tuvieras).';
-        } else if (error.code === 'ER_BAD_NULL_ERROR') {
-            // Este error ocurriría si un campo NOT NULL se intenta insertar como NULL.
-            userMessage = 'Error: Un campo obligatorio no puede ser nulo o está vacío. Asegúrate de que los campos de cantidad, proveedor, categoría y marca tengan valores válidos.';
-        } else if (error.message.includes('Bind parameters must not contain undefined')) {
-            // Esto debería ser menos probable si la desestructuración es correcta y los campos obligatorios se validan.
-            userMessage = 'Error interno: Un valor undefined está siendo pasado a la base de datos. Posible desincronización entre frontend y backend.';
+
+        const newArticuloId = result.insertId;
+        if (!newArticuloId) {
+            return res.status(500).json({ error: 'Error al obtener el ID del artículo después de la inserción.' });
         }
-        res.status(500).json({ error: userMessage, details: error.message });
+
+        // Insertar movimiento automático
+    // Insertar movimiento automático
+    await pool.execute(
+        `INSERT INTO Movimientos 
+        (id_articulo, id_usuario, tipo_movimiento, cantidad, fecha, observacion) 
+        VALUES (?, ?, ?, ?, NOW(), ?)`,
+        [newArticuloId, idUsuarioAccion, 'ingreso', finalCantidad, 'Inserción Artículos']
+    );
+
+
+        res.status(201).json({ message: 'Artículo agregado y movimiento registrado exitosamente', id: newArticuloId });
+
+    } catch (error) {
+        console.error('Error al agregar artículo y/o movimiento:', error);
+        if (error.code === 'ER_DUP_ENTRY') {
+            res.status(409).json({ error: 'Ya existe un artículo con un valor único duplicado.' });
+        } else if (error.code === 'ER_NO_REFERENCED_ROW_2' || error.code === 'ER_ROW_IS_REFERENCED_2' || error.sqlState === '23000') {
+            res.status(409).json({ error: 'Error de integridad de datos. Verifica los IDs de categoría, proveedor, marca y usuario.' });
+        } else {
+            res.status(500).json({ error: 'Error interno del servidor al agregar artículo.' });
+        }
     }
 });
+
+
+
 
 // app.put('/api/articulos/:id') - Actualizar un artículo existente
 app.put('/api/articulos/:id', async (req, res) => {
     const { id } = req.params;
-    const { nombre_articulo, descripcion, cantidad, unidad_medida, precio_unitario, ubicacion } = req.body;
+    const {
+        nombre,
+        descripcion,
+        cantidad,
+        categoria,
+        proveedor,
+        fecha_adquisicion,
+        marca
+    } = req.body;
+
+    const finalNombreArticulo = nombre?.trim() || null;
+    const finalDescripcion = descripcion?.trim() || null;
+    const finalCantidad = cantidad !== undefined && cantidad !== null && !isNaN(cantidad) ? parseInt(cantidad) : null;
+    const finalIdCategoria = categoria !== undefined && categoria !== null && !isNaN(categoria) ? parseInt(categoria) : null;
+    const finalIdProveedor = proveedor !== undefined && proveedor !== null && !isNaN(proveedor) ? parseInt(proveedor) : null;
+    const finalFechaIngreso = fecha_adquisicion?.trim() || null;
+    const finalIdMarca = marca !== undefined && marca !== null && !isNaN(marca) ? parseInt(marca) : null;
+
+    const idUsuarioAccion = 2; // Debería venir de la sesión
+
+    if (!finalNombreArticulo) return res.status(400).json({ error: 'El nombre del artículo es obligatorio.' });
+    if (finalCantidad === null || isNaN(finalCantidad) || finalCantidad < 0) return res.status(400).json({ error: 'La cantidad es obligatoria y debe ser >= 0.' });
+
     try {
-        const [result] = await pool.execute(
-            'UPDATE articulos SET nombre_articulo = ?, descripcion = ?, cantidad = ?, unidad_medida = ?, precio_unitario = ?, ubicacion = ? WHERE id_articulo = ?',
-            [nombre_articulo, descripcion, cantidad, unidad_medida, precio_unitario, ubicacion, id]
-        );
-        if (result.affectedRows === 0) {
-            res.status(404).json({ error: 'Artículo no encontrado.' });
-        } else {
-            res.json({ message: 'Artículo actualizado exitosamente.' });
+        const [rows] = await pool.execute('SELECT * FROM Articulos WHERE id_articulo = ?', [id]);
+        if (rows.length === 0) return res.status(404).json({ error: 'Artículo no encontrado' });
+
+        const articuloActual = rows[0];
+
+        // Verifica si hubo algún cambio
+        const huboCambio =
+            articuloActual.nombre_articulo !== finalNombreArticulo ||
+            articuloActual.descripcion !== finalDescripcion ||
+            articuloActual.cantidad !== finalCantidad ||
+            articuloActual.id_categoria !== finalIdCategoria ||
+            articuloActual.id_proveedor !== finalIdProveedor ||
+            articuloActual.fecha_ingreso?.toISOString().split('T')[0] !== finalFechaIngreso ||
+            articuloActual.id_marca !== finalIdMarca;
+
+        if (!huboCambio) {
+            return res.status(200).json({ message: 'No se realizaron cambios' });
         }
+
+        const [updateResult] = await pool.execute(
+            `UPDATE Articulos SET 
+                nombre_articulo = ?, 
+                descripcion = ?, 
+                cantidad = ?, 
+                id_categoria = ?, 
+                id_proveedor = ?, 
+                fecha_ingreso = ?, 
+                id_marca = ?
+            WHERE id_articulo = ?`,
+            [finalNombreArticulo, finalDescripcion, finalCantidad, finalIdCategoria, finalIdProveedor, finalFechaIngreso, finalIdMarca, id]
+        );
+
+        // Calcular diferencia de cantidad
+        const diferenciaCantidad = finalCantidad - articuloActual.cantidad;
+
+        const cantidadMovimiento = Math.abs(diferenciaCantidad) > 0 ? Math.abs(diferenciaCantidad) : 1;
+
+        // Insertar movimiento, aunque la cantidad no haya cambiado
+        await pool.execute(
+            `INSERT INTO Movimientos (id_articulo, id_usuario, tipo_movimiento, cantidad, fecha, observacion)
+             VALUES (?, ?, 'ajuste', ?, NOW(), ?)`,
+            [id, idUsuarioAccion, cantidadMovimiento, 'Ajuste por edición de artículo']
+        );
+
+        res.json({ message: 'Artículo actualizado correctamente' });
+
     } catch (error) {
-        console.error('Error al actualizar artículo:', error);
-        res.status(500).send('Error en el servidor al actualizar el artículo.');
+        console.error('Error en update:', error);
+        res.status(500).json({ error: 'Error en la actualización' });
     }
 });
+
+
+
+
+
 
 // app.delete('/api/articulos/:id') - Eliminar un artículo
 app.delete('/api/articulos/:id', async (req, res) => {
     const { id } = req.params;
-    try {
-        const [result] = await pool.execute('DELETE FROM articulos WHERE id_articulo = ?', [id]);
-        if (result.affectedRows === 0) {
-            res.status(404).json({ error: 'Artículo no encontrado.' });
-        } else {
-            res.json({ message: 'Artículo eliminado exitosamente.' });
-        }
-    } catch (error) {
-        console.error('Error al eliminar artículo:', error);
-        res.status(500).send('Error en el servidor al eliminar el artículo.');
-    }
-});
-
-
-// --- RUTAS PARA GESTIÓN DE SOLICITUDES ---
-
-// app.post('/api/solicitudes') - Crear una nueva solicitud
-app.post('/api/solicitudes', async (req, res) => {
-    const { id_usuario_solicitante, id_articulo, cantidad, observaciones } = req.body;
+    const id_usuario = 2; // Usuario por defecto mientras no implementes autenticación
 
     const connection = await pool.getConnection();
+
     try {
         await connection.beginTransaction();
 
-        // 1. Insertar en la tabla Solicitudes
-        const [solicitudResult] = await connection.execute(
-            'INSERT INTO Solicitudes (id_usuario, observacion, estado, fecha_solicitud) VALUES (?, ?, ?, NOW())',
-            [id_usuario_solicitante, observaciones, 'pendiente'] // 'pendiente' es el estado inicial
-        );
-        const id_solicitud = solicitudResult.insertId; // Obtener el ID de la solicitud recién creada
-
-        // 2. Insertar en la tabla DetalleSolicitudes
-        await connection.execute(
-            'INSERT INTO DetalleSolicitudes (id_solicitud, id_articulo, cantidad) VALUES (?, ?, ?)',
-            [id_solicitud, id_articulo, cantidad]
-        );
-
-        await connection.commit(); // Confirmar la transacción
-        res.status(201).json({ message: 'Solicitud creada exitosamente', id_solicitud: id_solicitud });
-
-    } catch (error) {
-        await connection.rollback(); // Deshacer la transacción si algo falla
-        console.error('Error al crear solicitud:', error);
-        let errorMessage = 'Error en el servidor al crear la solicitud.';
-        if (error.code === 'ER_BAD_FIELD_ERROR') {
-            errorMessage = `Error de columna: Una de las columnas especificadas no existe. Detalles: ${error.sqlMessage}`;
-        } else if (error.code === 'ER_NO_REFERENCED_ROW_2') {
-            errorMessage = 'Error de clave foránea: El usuario o artículo especificado no existe o no se encontró.';
-        } else if (error.code === 'ER_SP_DOES_NOT_EXIST' || error.code === 'ER_BAD_FUNCTION_CALL') {
-             errorMessage = 'Error de función de fecha: Asegúrate de usar NOW() para MySQL en lugar de GETDATE().';
-        }
-        res.status(500).json({ error: errorMessage, details: error.message });
-    } finally {
-        connection.release(); // Liberar la conexión al pool
-    }
-});
-
-// app.get('/api/solicitudes') - Obtener todas las solicitudes con detalles
-app.get('/api/solicitudes', async (req, res) => {
-    try {
-        const [rows] = await pool.execute(`
-            SELECT
-                s.id_solicitud,
-                s.id_usuario,
-                u.nombre_usuario,
-                s.fecha_solicitud,
-                s.estado,
-                s.observacion,
-                ds.id_articulo,
-                a.nombre_articulo,
-                ds.cantidad AS cantidad_solicitada,
-                s.id_usuario_admin,
-                ua.nombre_usuario AS nombre_admin,
-                s.fecha_accion_admin,
-                s.respuesta_admin
-            FROM
-                Solicitudes s
-            JOIN
-                DetalleSolicitudes ds ON s.id_solicitud = ds.id_solicitud
-            JOIN
-                Articulos a ON ds.id_articulo = a.id_articulo
-            JOIN
-                Usuarios u ON s.id_usuario = u.id_usuario
-            LEFT JOIN
-                Usuarios ua ON s.id_usuario_admin = ua.id_usuario
-            ORDER BY s.fecha_solicitud DESC
-        `);
-        res.json(rows);
-    } catch (error) {
-        console.error('Error al obtener solicitudes:', error);
-        res.status(500).send('Error en el servidor al obtener solicitudes.');
-    }
-});
-
-// NUEVO: app.get('/api/solicitudes/:id') - Obtener una solicitud específica por ID
-app.get('/api/solicitudes/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        const [rows] = await pool.execute(`
-            SELECT
-                s.id_solicitud,
-                s.id_usuario,
-                u.nombre_usuario,
-                s.fecha_solicitud,
-                s.estado,
-                s.observacion,
-                ds.id_articulo,
-                a.nombre_articulo,
-                ds.cantidad AS cantidad_solicitada,
-                s.id_usuario_admin,
-                ua.nombre_usuario AS nombre_admin,
-                s.fecha_accion_admin,
-                s.respuesta_admin
-            FROM
-                Solicitudes s
-            JOIN
-                DetalleSolicitudes ds ON s.id_solicitud = ds.id_solicitud
-            JOIN
-                Articulos a ON ds.id_articulo = a.id_articulo
-            JOIN
-                Usuarios u ON s.id_usuario = u.id_usuario
-            LEFT JOIN
-                Usuarios ua ON s.id_usuario_admin = ua.id_usuario
-            WHERE s.id_solicitud = ?
-        `, [id]);
-
-        if (rows.length > 0) {
-            res.json(rows[0]);
-        } else {
-            res.status(404).json({ error: 'Solicitud no encontrada.' });
-        }
-    } catch (error) {
-        console.error('Error al obtener solicitud por ID:', error);
-        res.status(500).send('Error en el servidor al obtener la solicitud.');
-    }
-});
-
-// app.put('/api/solicitudes/:id') - Actualizar estado de solicitud y manejar stock (AHORA PROTEGIDA POR requireAdmin)
-app.put('/api/solicitudes/:id', requireAdmin, async (req, res) => { // APLICADO MIDDLEWARE requireAdmin
-    const { id } = req.params;
-    const { estado, respuesta_admin } = req.body; // id_articulo NO se usa del body aquí
-
-    // Obtener id_usuario_admin desde la sesión del usuario autenticado
-    const id_usuario_admin = req.session.userId; // ¡Asumimos que el admin que aprueba es el logueado!
-
-    if (!['aprobada', 'rechazada', 'completada'].includes(estado)) {
-        return res.status(400).json({ error: 'Estado de solicitud inválido.' });
-    }
-
-    const connection = await pool.getConnection();
-    try {
-        await connection.beginTransaction();
-
-        // Obtener el estado actual de la solicitud y la cantidad de stock del artículo del DetalleSolicitudes
-        const [solicitudActual] = await connection.execute(
-            `SELECT s.estado, ds.cantidad AS cantidad_solicitada, a.stock, ds.id_articulo
-             FROM Solicitudes s
-             JOIN DetalleSolicitudes ds ON s.id_solicitud = ds.id_solicitud
-             JOIN Articulos a ON ds.id_articulo = a.id_articulo
-             WHERE s.id_solicitud = ?`,
+        // 1. Obtener datos del artículo para registrar cantidad y nombre antes de borrar
+        const [articuloRows] = await connection.query(
+            'SELECT cantidad, nombre_articulo FROM articulos WHERE id_articulo = ?',
             [id]
         );
 
-        if (solicitudActual.length === 0) {
-            await connection.rollback();
-            return res.status(404).json({ error: 'Solicitud no encontrada.' });
+        if (articuloRows.length === 0) {
+            await connection.release();
+            return res.status(404).json({ message: 'Artículo no encontrado' });
         }
 
-        const currentStatus = solicitudActual[0].estado;
-        const requestedQuantity = solicitudActual[0].cantidad_solicitada;
-        const currentStock = solicitudActual[0].stock;
-        const articleIdFromDB = solicitudActual[0].id_articulo; // Usar el ID del artículo de la BD
+        const articulo = articuloRows[0];
 
-        // Lógica de stock solo si el estado cambia de 'pendiente' a 'aprobada'
-        if (estado === 'aprobada' && currentStatus === 'pendiente') {
-            if (currentStock < requestedQuantity) {
-                await connection.rollback();
-                return res.status(400).json({ error: 'Stock insuficiente para aprobar esta solicitud.' });
-            }
-            // Disminuir el stock del artículo
-            await connection.execute(
-                'UPDATE Articulos SET cantidad = cantidad - ? WHERE id_articulo = ?',
-                [requestedQuantity, articleIdFromDB]
-            );
-
-            // Registrar el movimiento de salida
-            await connection.execute(
-                'INSERT INTO Movimientos (id_articulo, tipo_movimiento, cantidad, fecha_movimiento, id_usuario) VALUES (?, ?, ?, NOW(), ?)',
-                [articleIdFromDB, 'salida', requestedQuantity, id_usuario_admin] // Usar el ID del admin que aprueba
-            );
-        }
-
-        // Actualizar el estado de la solicitud en la tabla Solicitudes
-        await connection.execute(
-            `UPDATE Solicitudes
-             SET estado = ?, respuesta_admin = ?, fecha_accion_admin = NOW(), id_usuario_admin = ?
-             WHERE id_solicitud = ?`,
-            [estado, respuesta_admin, id_usuario_admin, id] // id_usuario_admin YA VENÍA DE LA SESIÓN
+        // 2. Insertar movimiento de baja incluyendo nombre_articulo
+        await connection.query(
+            `INSERT INTO movimientos 
+            (id_articulo, nombre_articulo, id_usuario, tipo_movimiento, cantidad, observacion)
+            VALUES (?, ?, ?, 'baja', ?, ?)`,
+            [id, articulo.nombre_articulo, id_usuario, articulo.cantidad, 'Artículo eliminado']
         );
 
-        await connection.commit();
-        res.json({ message: `Solicitud ${estado} exitosamente.` });
+        // 3. Eliminar artículo
+        await connection.query('DELETE FROM articulos WHERE id_articulo = ?', [id]);
 
+        await connection.commit();
+        await connection.release();
+
+        res.json({ message: 'Artículo eliminado y movimiento registrado correctamente' });
     } catch (error) {
         await connection.rollback();
-        console.error(`Error al actualizar solicitud ${id}:`, error);
-        let errorMessage = `Error en el servidor al actualizar la solicitud a ${estado}.`;
-        if (error.sqlMessage) {
-            errorMessage += ` Detalle: ${error.sqlMessage}`;
-        } else if (error.code === 'ER_SP_DOES_NOT_EXIST' || error.code === 'ER_BAD_FUNCTION_CALL') {
-             errorMessage = 'Error de función de fecha: Asegúrate de usar NOW() para MySQL en lugar de GETDATE().';
-        }
-        res.status(500).json({ error: errorMessage, details: error.message });
-    } finally {
-        connection.release();
+        await connection.release();
+        console.error('Error al eliminar artículo:', error);
+        res.status(500).json({ message: 'Error al eliminar artículo' });
     }
 });
 
-// app.delete('/api/solicitudes/:id') - Eliminar una solicitud
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// --- RUTAS PARA GESTIÓN DE SOLICITUDES ---
+// Middleware para verificar si el usuario está autenticado
+function isAuthenticated(req, res, next) {
+    if (req.session && req.session.userId) {
+        next();
+    } else {
+        res.status(401).json({ error: 'No autorizado. Por favor, inicie sesión.' });
+    }
+}
+
+// Endpoint para crear nueva solicitud
+app.post('/api/solicitudes', async (req, res) => {
+  try {
+    const id_usuario_solicitante = req.session.userId;
+    if (!id_usuario_solicitante) {
+      return res.status(401).json({ error: 'Usuario no autenticado.' });
+    }
+
+    const { id_articulo, cantidad, observaciones } = req.body;
+
+    if (!id_articulo || !cantidad || cantidad <= 0) {
+      return res.status(400).json({ error: 'Datos incompletos o inválidos.' });
+    }
+
+    // Verificar stock disponible
+    const [articulo] = await pool.execute(
+      'SELECT cantidad FROM Articulos WHERE id_articulo = ?',
+      [id_articulo]
+    );
+
+    if (articulo.length === 0) {
+      return res.status(404).json({ error: 'Artículo no encontrado.' });
+    }
+
+    const stockDisponible = articulo[0].cantidad;
+    if (cantidad > stockDisponible) {
+      return res.status(400).json({ 
+        error: `No hay suficiente stock. Disponible: ${stockDisponible}, Solicitado: ${cantidad}`
+      });
+    }
+
+    // Si pasa todas las validaciones, crear la solicitud
+    const [result] = await pool.execute(
+      `INSERT INTO Solicitudes (id_usuario, id_articulo, cantidad_solicitada, observacion, estado, fecha_solicitud)
+       VALUES (?, ?, ?, ?, 'pendiente', NOW())`,
+      [id_usuario_solicitante, id_articulo, cantidad, observaciones || null]
+    );
+
+    res.json({ 
+      message: 'Solicitud creada correctamente.', 
+      id_solicitud: result.insertId 
+    });
+  } catch (error) {
+    console.error('Error al crear solicitud:', error);
+    res.status(500).json({ error: 'Error interno del servidor.' });
+  }
+});
+
+app.get('/api/solicitudes', async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT s.id_solicitud, s.estado, s.fecha_solicitud, s.fecha_accion_admin, 
+             u.nombre_usuario, a.nombre_articulo, s.cantidad_solicitada
+      FROM Solicitudes s
+      JOIN usuarios u ON s.id_usuario = u.id_usuario
+      JOIN articulos a ON s.id_articulo = a.id_articulo
+    `);
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener solicitudes' });
+  }
+});
+
+app.get('/api/solicitudes/pendientes', async (req, res) => {
+  console.log('Accediendo a /api/solicitudes/pendientes'); // <-- Agrega esto
+  try {
+    const [rows] = await pool.query(`
+      SELECT 
+        s.id_solicitud, 
+        s.id_articulo,
+        a.nombre_articulo,
+        u.nombre_usuario,
+        s.cantidad_solicitada,
+        s.fecha_solicitud,
+        s.observacion
+      FROM Solicitudes s
+      JOIN Articulos a ON s.id_articulo = a.id_articulo
+      JOIN Usuarios u ON s.id_usuario = u.id_usuario
+      WHERE s.estado = 'pendiente'
+      ORDER BY s.fecha_solicitud DESC
+      LIMIT 5
+    `);
+    console.log('Resultados encontrados:', rows.length); // <-- Agrega esto
+    res.json(rows);
+  } catch (error) {
+    console.error('Error al obtener solicitudes pendientes:', error);
+    res.status(500).json({ error: 'Error al obtener solicitudes pendientes' });
+  }
+});
+app.get('/api/solicitudes/:id', async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const [rows] = await pool.execute(`
+      SELECT
+        s.id_solicitud,
+        s.id_usuario,
+        u.nombre_usuario,
+        s.fecha_solicitud,
+        s.estado,
+        s.observacion,
+        s.id_articulo,
+        a.nombre_articulo,
+        s.cantidad_solicitada,
+        s.respuesta_admin,
+        s.fecha_accion_admin
+      FROM
+        Solicitudes s
+      JOIN Usuarios u ON s.id_usuario = u.id_usuario
+      JOIN Articulos a ON s.id_articulo = a.id_articulo
+      WHERE s.id_solicitud = ?
+    `, [id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Solicitud no encontrada' });
+    }
+
+    res.json(rows[0]);
+  } catch (error) {
+    console.error('Error al obtener solicitud por ID:', error);
+    res.status(500).json({ error: 'Error al obtener la solicitud' });
+  }
+});
+
+app.put('/api/solicitudes/:id', requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { estado, respuesta_admin } = req.body;
+
+  const id_usuario_admin = req.session.userId;
+
+  if (!['aprobada', 'rechazada', 'completada'].includes(estado)) {
+    return res.status(400).json({ error: 'Estado de solicitud inválido.' });
+  }
+
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    // Obtener datos actuales de la solicitud
+    const [solicitudActual] = await connection.execute(
+      `SELECT s.estado, s.cantidad_solicitada, a.cantidad, s.id_articulo
+       FROM Solicitudes s
+       JOIN Articulos a ON s.id_articulo = a.id_articulo
+       WHERE s.id_solicitud = ?`,
+      [id]
+    );
+
+    if (solicitudActual.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: 'Solicitud no encontrada.' });
+    }
+
+    const currentStatus = solicitudActual[0].estado;
+    const requestedQuantity = solicitudActual[0].cantidad_solicitada;
+    const currentStock = solicitudActual[0].cantidad;
+    const articleIdFromDB = solicitudActual[0].id_articulo;
+
+    // Solo si se aprueba una solicitud pendiente, se actualiza stock y se registra movimiento
+    if (estado === 'aprobada' && currentStatus === 'pendiente') {
+      if (currentStock < requestedQuantity) {
+        await connection.rollback();
+        return res.status(400).json({ error: 'Stock insuficiente para aprobar esta solicitud.' });
+      }
+
+      // Restar stock
+      await connection.execute(
+        'UPDATE Articulos SET cantidad = cantidad - ? WHERE id_articulo = ?',
+        [requestedQuantity, articleIdFromDB]
+      );
+
+
+        // Registrar movimiento en tabla Movimientos
+        console.log('id_usuario_admin que se usará:', id_usuario_admin);
+        console.log('Insertando movimiento con id_articulo:', articleIdFromDB);
+    await connection.execute(
+    `INSERT INTO Movimientos 
+        (id_articulo, id_usuario, tipo_movimiento, cantidad, fecha, fecha_movimiento, observacion) 
+    VALUES (?, ?, 'retiro', ?, NOW(), NOW(), ?)`,
+    [articleIdFromDB, id_usuario_admin, requestedQuantity, `Aprobación solicitud ${id}`]
+    );
+    }
+
+    // Actualizar estado, respuesta y fecha de acción admin en Solicitudes
+    await connection.execute(
+    `UPDATE Solicitudes
+    SET estado = ?, respuesta_admin = ?, fecha_accion_admin = NOW(), id_usuario_admin = ?
+    WHERE id_solicitud = ?`,
+    [estado, respuesta_admin, id_usuario_admin, id]
+    );
+    await connection.commit();
+    res.json({ message: `Solicitud ${estado} exitosamente.` });
+
+  } catch (error) {
+    await connection.rollback();
+    console.error(`Error al actualizar solicitud ${id}:`, error);
+    let errorMessage = `Error en el servidor al actualizar la solicitud a ${estado}.`;
+    if (error.sqlMessage) {
+      errorMessage += ` Detalle: ${error.sqlMessage}`;
+    }
+    res.status(500).json({ error: errorMessage, details: error.message });
+  } finally {
+    connection.release();
+  }
+});
+
+
+
+
 app.delete('/api/solicitudes/:id', async (req, res) => {
-    const { id } = req.params;
-    const connection = await pool.getConnection();
-    try {
-        await connection.beginTransaction();
+  const { id } = req.params;
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
 
-        // 1. Eliminar de DetalleSolicitudes (ya que depende de Solicitudes)
-        await connection.execute('DELETE FROM DetalleSolicitudes WHERE id_solicitud = ?', [id]);
+    const [result] = await connection.execute('DELETE FROM Solicitudes WHERE id_solicitud = ?', [id]);
 
-        // 2. Eliminar de Solicitudes
-        const [result] = await connection.execute('DELETE FROM Solicitudes WHERE id_solicitud = ?', [id]);
-
-        if (result.affectedRows === 0) {
-            await connection.rollback();
-            return res.status(404).json({ error: 'Solicitud no encontrada.' });
-        }
-
-        await connection.commit();
-        res.json({ message: 'Solicitud eliminada exitosamente.' });
-    } catch (error) {
-        await connection.rollback();
-        console.error('Error al eliminar solicitud:', error);
-        res.status(500).json({ error: 'Error en el servidor al eliminar la solicitud.', details: error.message });
-    } finally {
-        connection.release();
+    if (result.affectedRows === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: 'Solicitud no encontrada.' });
     }
+
+    await connection.commit();
+    res.json({ message: 'Solicitud eliminada exitosamente.' });
+  } catch (error) {
+    await connection.rollback();
+    console.error('Error al eliminar solicitud:', error);
+    res.status(500).json({ error: 'Error en el servidor al eliminar la solicitud.', details: error.message });
+  } finally {
+    connection.release();
+  }
 });
 
-// --- RUTAS PARA GESTIÓN DE MOVIMIENTOS ---
+
 // --- RUTAS PARA GESTIÓN DE MOVIMIENTOS ---
 app.get('/api/movimientos', async (req, res) => {
-    try {
-        const [rows] = await pool.execute(`
-            SELECT
-                m.id_movimiento,
-                m.id_articulo,
-                a.nombre_articulo,
-                m.tipo_movimiento,
-                m.cantidad,
-                m.fecha, -- ¡CAMBIADO AQUÍ! Ya no necesita AS fecha
-                m.id_usuario,
-                u.nombre_usuario AS nombre_usuario,
-                c.nombre_categoria,
-                p.nombre_proveedor,
-                ma.nombre_marca
-            FROM
-                movimientos m -- Asegúrate que Movimientos también está en minúsculas si así es en la BD
-            JOIN
-                articulos a ON m.id_articulo = a.id_articulo -- Asegúrate que Articulos también está en minúsculas
-            JOIN
-                usuarios u ON m.id_usuario = u.id_usuario     -- Asegúrate que Usuarios también está en minúsculas
-            LEFT JOIN
-                categoriaarticulos c ON a.id_categoria = c.id_categoria
-            LEFT JOIN
-                proveedores p ON a.id_proveedor = p.id_proveedor
-            LEFT JOIN
-                marcaarticulos ma ON a.id_marca = ma.id_marca
-            ORDER BY m.fecha DESC -- ¡CAMBIADO AQUÍ! Ordenar por m.fecha
-        `);
-        res.json(rows);
-    } catch (error) {
-        console.error('Error al obtener movimientos:', error);
-        res.status(500).send('Error en el servidor al obtener movimientos.');
-    }
+  try {
+    const [movimientos] = await pool.query(`
+      SELECT 
+          m.id_movimiento, 
+          COALESCE(m.nombre_articulo, a.nombre_articulo) AS nombre_articulo,
+          u.nombre_usuario AS nombre_usuario,
+          m.tipo_movimiento,
+          m.cantidad,
+          m.fecha,
+          m.observacion,
+          COALESCE(ca.nombre_categoria, 'Sin categoría') AS nombre_categoria,
+          COALESCE(ma.nombre_marca, 'Sin marca') AS nombre_marca,
+          COALESCE(p.nombre_proveedor, 'Sin proveedor') AS nombre_proveedor
+      FROM movimientos m
+      LEFT JOIN articulos a ON m.id_articulo = a.id_articulo
+      LEFT JOIN categoriaarticulos ca ON a.id_categoria = ca.id_categoria
+      LEFT JOIN marcaarticulos ma ON a.id_marca = ma.id_marca
+      LEFT JOIN proveedores p ON a.id_proveedor = p.id_proveedor
+      LEFT JOIN usuarios u ON m.id_usuario = u.id_usuario
+      ORDER BY m.fecha DESC
+      LIMIT 100
+    `);
+
+    res.json(movimientos);
+  } catch (error) {
+    console.error('Error fetching movimientos:', error);
+    res.status(500).json({ error: 'Error al obtener movimientos' });
+  }
 });
+
+
+
 
 // --- RUTAS DE ESTADÍSTICAS ---
 app.get('/api/stats/total-items', async (req, res) => {

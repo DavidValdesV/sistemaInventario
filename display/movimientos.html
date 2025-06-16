@@ -8,146 +8,288 @@
     <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Manrope%3Awght%40400%3B500%3B700%3B800&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <style>
-        /* Estilos adicionales para la tabla si son necesarios */
+        /* Mejoras visuales para la tabla */
         tbody tr:nth-child(odd) {
-            background-color: #f9fafb; /* Color de fondo para filas impares */
+            background-color: #f8fafc;
         }
         tbody tr:hover {
-            background-color: #f1f4f1; /* Color al pasar el mouse */
+            background-color: #f1f5f9;
+            transform: translateY(-1px);
+            transition: all 0.2s ease-in-out;
         }
-        /* Estilos para el modal (aunque movimientos no tenga, se mantiene por consistencia de base) */
+        
+        /* Animaciones suaves */
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            transform: translateX(4px);
+        }
+        
+        /* Efectos de sombra mejorados */
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .card-shadow:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        /* Gradiente mejorado para el título */
+        .gradient-text {
+            background: linear-gradient(135deg, #10b981, #3b82f6, #8b5cf6);
+            background-size: 200% 200%;
+            animation: gradient-shift 3s ease infinite;
+        }
+        
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Estilos para el modal (mantenido por consistencia) */
         .modal {
-            display: none; /* Oculto por defecto */
-            position: fixed; /* Posición fija en la pantalla */
-            z-index: 1000; /* Asegura que esté por encima de todo */
+            display: none;
+            position: fixed;
+            z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto; /* Habilitar scroll si es necesario */
-            background-color: rgba(0,0,0,0.4); /* Fondo semi-transparente */
-            justify-content: center; /* Centrar horizontalmente */
-            align-items: center; /* Centrar verticalmente */
-            backdrop-filter: blur(5px); /* Efecto de desenfoque */
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
         }
+        
         .modal-content {
             background-color: #fefefe;
-            margin: auto; /* Centrar el contenido del modal */
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin: auto;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             max-width: 500px;
             width: 90%;
             position: relative;
         }
+        
         .close-button {
-            color: #aaa;
+            color: #9ca3af;
             float: right;
             font-size: 28px;
             font-weight: bold;
+            transition: color 0.2s ease;
         }
+        
         .close-button:hover,
         .close-button:focus {
-            color: black;
+            color: #374151;
             text-decoration: none;
             cursor: pointer;
         }
+        
+        /* Indicador de carga */
+        .loading-shimmer {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
     </style>
 </head>
-<body class="bg-gray-100 flex h-screen">
-    <div class="w-64 bg-gray-800 text-white flex flex-col">
-        <div class="p-4 text-2xl font-bold text-center border-b border-gray-700">
-            Inventario MUNI
-        </div>
-        <nav class="flex-1 px-2 py-4">
-            <a href="/main.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 flex h-screen font-sans">
+    <!-- Sidebar mejorada -->
+    <aside class="w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col shadow-2xl">
+        <!-- Header del sidebar -->
+        <header class="p-6 text-center border-b border-gray-700 bg-gray-900/50 backdrop-blur-sm">
+            <h1 class="text-xl font-bold">
+                <span class="bg-clip-text text-transparent gradient-text">
+                    Gestión Inventario
+                </span>
+            </h1>
+            <p class="text-xs text-gray-400 mt-1">Municipalidad de Quilleco</p>
+        </header>
+        
+        <!-- Navegación -->
+        <nav class="flex-1 px-3 py-6 space-y-1" role="navigation" aria-label="Navegación principal">
+            <a href="/main.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2 2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                 </svg>
-                Inicio
+                <span class="font-medium">Inicio</span>
             </a>
-            <a href="/articulos.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/articulos.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5.989A2 2 0 0115 5.01V21l-5-2-5 2V5.01A2 2 0 017.011 3z"/>
                 </svg>
-                Artículos
+                <span class="font-medium">Artículos</span>
             </a>
-            <a href="/movimientos.html" class="flex items-center px-4 py-2 mt-2 text-white bg-gray-700 rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/movimientos.html" class="nav-link flex items-center px-4 py-3 text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg" aria-current="page">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                 </svg>
-                Movimientos
+                <span class="font-medium">Movimientos</span>
+                <div class="ml-auto w-2 h-2 bg-blue-300 rounded-full"></div>
             </a>
-            <a href="/proveedores.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/proveedores.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h-4c-1.105 0-2-.895-2-2v-3c0-.552.448-1 1-1h4c.552 0 1 .448 1 1v3c0 1.105-.895 2-2 2zm-5-14a4 4 0 11-8 0 4 4 0 018 0zM12 21v-4"/>
                 </svg>
-                Proveedores
+                <span class="font-medium">Proveedores</span>
             </a>
-            <a href="/categorias.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/categorias.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H7a2 2 0 00-2 2v2m7-7V3"/>
                 </svg>
-                Categorías
+                <span class="font-medium">Categorías</span>
             </a>
-            <a href="/marcas.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/marcas.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2 2m-2-2l-2 2m0 0l2 2m-2-2L9 5m7 6v4m-2-2h4m-7 0a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
-                Marcas
+                <span class="font-medium">Marcas</span>
             </a>
-            <a href="/solicitudes.html" class="flex items-center px-4 py-2 mt-2 text-white bg-gray-700 rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/solicitudes.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                 </svg>
-                Solicitudes
+                <span class="font-medium">Solicitudes</span>
             </a>
-            </nav>
-        <div class="p-4 border-t border-gray-700">
-            <a href="/logout" class="flex items-center px-4 py-2 mt-2 text-red-400 hover:bg-gray-700 hover:text-red-300 rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        </nav>
+        
+        <!-- Footer del sidebar -->
+        <footer class="p-4 border-t border-gray-700 bg-gray-900/30">
+            <a href="/logout" class="nav-link flex items-center px-4 py-3 text-red-400 hover:bg-red-900/20 hover:text-red-300 rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                 </svg>
-                Cerrar Sesión
+                <span class="font-medium">Cerrar Sesión</span>
             </a>
-        </div>
-    </div>
+        </footer>
+    </aside>
 
-    <div class="flex-1 p-8 overflow-y-auto">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Historial de Movimientos</h1>
-
-        <div class="flex justify-between items-center mb-6">
-            <div class="relative w-1/3">
-                <input type="text" id="searchInput" placeholder="Buscar movimientos..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline pl-10">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+    <!-- Contenido principal -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header del contenido -->
+        <header class="bg-white shadow-sm border-b border-gray-200 px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Historial de Movimientos</h1>
+                    <p class="text-gray-600 mt-1">Consulta y filtra todos los movimientos del inventario</p>
+                </div>
+                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
+                    <span id="lastUpdate">Última actualización: Ahora</span>
                 </div>
             </div>
-            </div>
+        </header>
 
-        <div class="bg-white shadow-md rounded-lg overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Mov.</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Artículo</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Observación</th>
-                    </tr>
-                </thead>
-                <tbody id="movimientosTableBody" class="bg-white divide-y divide-gray-200">
-                    </tbody>
-            </table>
+        <!-- Área de contenido con scroll -->
+        <div class="flex-1 p-8 overflow-y-auto">
+            <!-- Barra de búsqueda mejorada -->
+            <section class="mb-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                        <div class="relative flex-1 max-w-md">
+                            <label for="searchInput" class="sr-only">Buscar movimientos</label>
+                            <input 
+                                type="text" 
+                                id="searchInput" 
+                                placeholder="Buscar por artículo, usuario, tipo..." 
+                                class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                autocomplete="off"
+                            >
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4 text-sm text-gray-600">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                                <span>Entrada</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-red-400 rounded-full"></div>
+                                <span>Salida</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-blue-400 rounded-full"></div>
+                                <span>Ajuste</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tabla de movimientos mejorada -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden card-shadow">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                            <tr>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    ID Movimiento
+                                </th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Artículo
+                                </th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Usuario
+                                </th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Tipo
+                                </th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Cantidad
+                                </th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Fecha y Hora
+                                </th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Observación
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="movimientosTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Los datos se cargarán aquí dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Estado vacío -->
+                <div id="emptyState" class="hidden text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No hay movimientos</h3>
+                    <p class="mt-1 text-sm text-gray-500">No se encontraron movimientos que coincidan con tu búsqueda.</p>
+                </div>
+            </section>
         </div>
-    </div>
+    </main>
 
     <script>
         const movimientosTableBody = document.getElementById('movimientosTableBody');
+        const emptyState = document.getElementById('emptyState');
 
         // Función para formatear fechas y horas
         function formatFechaHora(dateString) {
@@ -161,12 +303,24 @@
             return `${year}-${month}-${day} ${hours}:${minutes}`;
         }
 
+        // Función para obtener el color del badge según el tipo de movimiento
+        function getTipoBadge(tipo) {
+            const badges = {
+                'entrada': 'bg-green-100 text-green-800 border-green-200',
+                'salida': 'bg-red-100 text-red-800 border-red-200',
+                'ajuste': 'bg-blue-100 text-blue-800 border-blue-200'
+            };
+            const badgeClass = badges[tipo.toLowerCase()] || 'bg-gray-100 text-gray-800 border-gray-200';
+            return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${badgeClass}">${tipo}</span>`;
+        }
+
         // --- Funciones para cargar y filtrar movimientos ---
         async function fetchMovimientos() {
             try {
                 const response = await fetch('/api/movimientos');
                 const movimientos = await response.json();
                 displayMovimientos(movimientos);
+                updateLastUpdateTime();
             } catch (error) {
                 console.error('Error al obtener movimientos:', error);
                 alert('Error al cargar el historial de movimientos.');
@@ -175,16 +329,39 @@
 
         function displayMovimientos(movimientos) {
             movimientosTableBody.innerHTML = '';
+            
+            if (movimientos.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
             movimientos.forEach(movimiento => {
                 const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition-colors';
                 row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${movimiento.id_movimiento}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${movimiento.nombre_articulo || 'N/A'}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${movimiento.nombre_usuario || 'N/A'}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${movimiento.tipo_movimiento}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${movimiento.cantidad}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatFechaHora(movimiento.fecha)}</td>
-                    <td class="px-6 py-4 text-sm text-gray-500">${movimiento.observacion || 'Sin observación'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        #${movimiento.id_movimiento}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                        ${movimiento.nombre_articulo || '<span class="text-gray-400">N/A</span>'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        ${movimiento.nombre_usuario || '<span class="text-gray-400">N/A</span>'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        ${getTipoBadge(movimiento.tipo_movimiento)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                        ${movimiento.cantidad}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${formatFechaHora(movimiento.fecha)}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate" title="${movimiento.observacion || 'Sin observación'}">
+                        ${movimiento.observacion || '<span class="text-gray-400 italic">Sin observación</span>'}
+                    </td>
                 `;
                 movimientosTableBody.appendChild(row);
             });
@@ -193,21 +370,41 @@
         function filtrarMovimientosTabla() {
             const searchText = document.getElementById('searchInput').value.toLowerCase();
             const rows = movimientosTableBody.getElementsByTagName('tr');
+            let visibleRows = 0;
 
             Array.from(rows).forEach(row => {
                 const textContent = row.textContent.toLowerCase();
                 if (textContent.includes(searchText)) {
                     row.style.display = '';
+                    visibleRows++;
                 } else {
                     row.style.display = 'none';
                 }
             });
+
+            // Mostrar estado vacío si no hay resultados
+            if (visibleRows === 0 && searchText.length > 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+        }
+
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('es-ES', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            document.getElementById('lastUpdate').textContent = `Última actualización: ${timeString}`;
         }
 
         // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', fetchMovimientos);
         document.getElementById('searchInput').addEventListener('keyup', filtrarMovimientosTabla);
 
+        // Actualizar la hora cada minuto
+        setInterval(updateLastUpdateTime, 60000);
     </script>
 </body>
 </html>

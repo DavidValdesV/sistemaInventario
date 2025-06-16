@@ -3,191 +3,484 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario MUNI Quilleco - Solicitudes de Inventario</title>
+    <title>Inventario MUNI Quilleco - Solicitudes</title>
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
     <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Manrope%3Awght%40400%3B500%3B700%3B800&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <style>
-        /* Estilos adicionales para la tabla */
+        /* Mejoras visuales para la tabla */
         tbody tr:nth-child(odd) {
-            background-color: #f9fafb; /* Color de fondo para filas impares */
+            background-color: #f8fafc;
         }
         tbody tr:hover {
-            background-color: #f1f4f1; /* Color al pasar el mouse */
+            background-color: #f1f5f9;
+            transform: translateY(-1px);
+            transition: all 0.2s ease-in-out;
         }
-        /* Estilos para el modal */
+        
+        /* Animaciones suaves */
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            transform: translateX(4px);
+        }
+        
+        /* Efectos de sombra mejorados */
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .card-shadow:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        /* Gradiente mejorado para el título */
+        .gradient-text {
+            background: linear-gradient(135deg, #10b981, #3b82f6, #8b5cf6);
+            background-size: 200% 200%;
+            animation: gradient-shift 3s ease infinite;
+        }
+        
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Estilos mejorados para modales */
         .modal {
-            display: none; /* Oculto por defecto */
-            position: fixed; /* Posición fija en la pantalla */
-            z-index: 1000; /* Asegura que esté por encima de todo */
+            display: none;
+            position: fixed;
+            z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto; /* Habilitar scroll si es necesario */
-            background-color: rgba(0,0,0,0.4); /* Fondo semi-transparente */
-            justify-content: center; /* Centrar horizontalmente */
-            align-items: center; /* Centrar verticalmente */
-            backdrop-filter: blur(5px); /* Efecto de desenfoque */
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease-out;
         }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
         .modal-content {
             background-color: #fefefe;
-            margin: auto; /* Centrar el contenido del modal */
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            max-width: 600px; /* Un poco más ancho para el modal de admin */
+            margin: auto;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            max-width: 700px;
             width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
             position: relative;
+            animation: slideIn 0.3s ease-out;
+            border: 1px solid rgba(255,255,255,0.2);
         }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
         .close-button {
-            color: #aaa;
+            color: #9ca3af;
             float: right;
             font-size: 28px;
             font-weight: bold;
+            transition: all 0.2s ease;
+            position: absolute;
+            top: 16px;
+            right: 20px;
         }
+        
         .close-button:hover,
         .close-button:focus {
-            color: black;
+            color: #374151;
             text-decoration: none;
             cursor: pointer;
+            transform: scale(1.1);
         }
-        /* Estilos para estados de solicitud */
-        .status-pendiente { color: #f59e0b; /* yellow-500 */ font-weight: bold; }
-        .status-aprobada { color: #10b981; /* green-500 */ font-weight: bold; }
-        .status-rechazada { color: #ef4444; /* red-500 */ font-weight: bold; }
-        .status-completada { color: #6b7280; /* gray-500 */ font-weight: bold; }
+        
+        /* Estilos para formularios */
+        .form-input {
+            transition: all 0.2s ease;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Botones mejorados */
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+        
+        .btn-purple {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-purple:hover {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        }
+        
+        /* Estados de solicitud */
+        .status-pendiente { 
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .status-aprobada { 
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .status-rechazada { 
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .status-completada { 
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* Badges de solicitudes */
+        .request-badge {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(6, 182, 212, 0.3);
+        }
     </style>
 </head>
-<body class="bg-gray-100 flex h-screen">
-    <!-- Sidebar -->
-    <div class="w-64 bg-gray-800 text-white flex flex-col">
-        <div class="p-4 text-2xl font-bold text-center border-b border-gray-700">
-            Inventario MUNI
-        </div>
-        <nav class="flex-1 px-2 py-4">
-            <a href="/main.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 flex h-screen font-sans">
+    <!-- Sidebar mejorada -->
+    <aside class="w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col shadow-2xl">
+        <!-- Header del sidebar -->
+        <header class="p-6 text-center border-b border-gray-700 bg-gray-900/50 backdrop-blur-sm">
+            <h1 class="text-xl font-bold">
+                <span class="bg-clip-text text-transparent gradient-text">
+                    Gestión Inventario
+                </span>
+            </h1>
+            <p class="text-xs text-gray-400 mt-1">Municipalidad de Quilleco</p>
+        </header>
+        
+        <!-- Navegación -->
+        <nav class="flex-1 px-3 py-6 space-y-1" role="navigation" aria-label="Navegación principal">
+            <a href="/main.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2 2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                 </svg>
-                Inicio
+                <span class="font-medium">Inicio</span>
             </a>
-            <a href="/articulos.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/articulos.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5.989A2 2 0 0115 5.01V21l-5-2-5 2V5.01A2 2 0 017.011 3z"/>
                 </svg>
-                Artículos
+                <span class="font-medium">Artículos</span>
             </a>
-            <a href="/movimientos.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/movimientos.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                 </svg>
-                Movimientos
+                <span class="font-medium">Movimientos</span>
             </a>
-            <a href="/proveedores.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/proveedores.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h-4c-1.105 0-2-.895-2-2v-3c0-.552.448-1 1-1h4c.552 0 1 .448 1 1v3c0 1.105-.895 2-2 2zm-5-14a4 4 0 11-8 0 4 4 0 018 0zM12 21v-4"/>
                 </svg>
-                Proveedores
+                <span class="font-medium">Proveedores</span>
             </a>
-            <a href="/categorias.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/categorias.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H7a2 2 0 00-2 2v2m7-7V3"/>
                 </svg>
-                Categorías
+                <span class="font-medium">Categorías</span>
             </a>
-            <a href="/marcas.html" class="flex items-center px-4 py-2 mt-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/marcas.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2 2m-2-2l-2 2m0 0l2 2m-2-2L9 5m7 6v4m-2-2h4m-7 0a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
-                Marcas
+                <span class="font-medium">Marcas</span>
             </a>
-            <a href="/solicitudes.html" class="flex items-center px-4 py-2 mt-2 text-white bg-gray-700 rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <a href="/solicitudes.html" class="nav-link flex items-center px-4 py-3 text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg" aria-current="page">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                 </svg>
-                Solicitudes
+                <span class="font-medium">Solicitudes</span>
+                <div class="ml-auto w-2 h-2 bg-blue-300 rounded-full"></div>
             </a>
-            <!-- Añadir más enlaces de navegación aquí -->
         </nav>
-        <div class="p-4 border-t border-gray-700">
-            <a href="/logout" class="flex items-center px-4 py-2 mt-2 text-red-400 hover:bg-gray-700 hover:text-red-300 rounded-md">
-                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        
+        <!-- Footer del sidebar -->
+        <footer class="p-4 border-t border-gray-700 bg-gray-900/30">
+            <a href="/logout" class="nav-link flex items-center px-4 py-3 text-red-400 hover:bg-red-900/20 hover:text-red-300 rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                 </svg>
-                Cerrar Sesión
+                <span class="font-medium">Cerrar Sesión</span>
             </a>
-        </div>
-    </div>
+        </footer>
+    </aside>
 
-    <!-- Main Content -->
-    <div class="flex-1 p-8 overflow-y-auto">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Gestión de Solicitudes de Inventario</h1>
-
-        <!-- Search and Add Request Section -->
-        <div class="flex justify-between items-center mb-6">
-            <div class="relative w-1/3">
-                <input type="text" id="searchInput" placeholder="Buscar solicitudes..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline pl-10">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+    <!-- Contenido principal -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header del contenido -->
+        <header class="bg-white shadow-sm border-b border-gray-200 px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="bg-gradient-to-r from-cyan-500 to-blue-600 p-3 rounded-xl mr-4">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Gestión de Solicitudes</h1>
+                        <p class="text-gray-600 mt-1">Administra las solicitudes de inventario y su estado</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
+                    <span id="lastUpdate">Última actualización: Ahora</span>
                 </div>
             </div>
-            <!-- This button is typically for a regular user to make a request -->
-            <button id="addRequestButton" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                Realizar Nueva Solicitud
-            </button>
-        </div>
+        </header>
 
-        <!-- Requests Table -->
-        <div class="bg-white shadow-md rounded-lg overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Solicitud</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Solicitante</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Artículo</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Solicitud</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Acción Admin</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones (Admin)</th>
-                    </tr>
-                </thead>
-                <tbody id="solicitudesTableBody" class="bg-white divide-y divide-gray-200">
-                    <!-- Solicitudes se cargarán aquí -->
-                </tbody>
-            </table>
-        </div>
-    </div>
+        <!-- Área de contenido con scroll -->
+        <div class="flex-1 p-8 overflow-y-auto">
+            <!-- Barra de búsqueda y acciones -->
+            <section class="mb-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+                        <div class="relative flex-1 max-w-md">
+                            <label for="searchInput" class="sr-only">Buscar solicitudes</label>
+                            <input 
+                                type="text" 
+                                id="searchInput" 
+                                placeholder="Buscar por solicitante, artículo, estado..." 
+                                class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                autocomplete="off"
+                            >
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <button 
+                            id="addRequestButton" 
+                            class="btn-success text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 shadow-md hover:shadow-lg transition-all duration-200 flex items-center"
+                        >
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Nueva Solicitud
+                        </button>
+                    </div>
+                    
+                    <!-- Leyenda de estados -->
+                    <div class="flex items-center space-x-6 mt-4 pt-4 border-t border-gray-100 text-sm text-gray-600">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full"></div>
+                            <span>Pendiente</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-gradient-to-r from-green-500 to-green-600 rounded-full"></div>
+                            <span>Aprobada</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-gradient-to-r from-red-500 to-red-600 rounded-full"></div>
+                            <span>Rechazada</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-gradient-to-r from-gray-500 to-gray-600 rounded-full"></div>
+                            <span>Completada</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-    <!-- Add New Request Modal (for regular users) -->
+            <!-- Tabla de solicitudes mejorada -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden card-shadow">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                            <tr>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Solicitante</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Artículo</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Cantidad</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Estado</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Fecha Solicitud</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Fecha Acción</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="solicitudesTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Los datos se cargarán aquí dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Estado vacío -->
+                <div id="emptyState" class="hidden text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No hay solicitudes</h3>
+                    <p class="mt-1 text-sm text-gray-500">No se encontraron solicitudes que coincidan con tu búsqueda.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal para nueva solicitud -->
     <div id="addRequestModal" class="modal">
         <div class="modal-content">
             <span class="close-button" id="closeAddRequestModalButton">&times;</span>
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">Realizar Nueva Solicitud</h2>
-            <form id="addRequestForm">
-                <div class="mb-4">
-                    <label for="addArticulo" class="block text-gray-700 text-sm font-bold mb-2">Artículo:</label>
-                    <select id="addArticulo" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                        <option value="">Seleccione un artículo</option>
-                        <!-- Opciones de artículos se cargarán aquí dinámicamente -->
-                    </select>
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 pr-8">Realizar Nueva Solicitud</h2>
+            <form id="addRequestForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="addArticulo" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <svg class="w-4 h-4 inline mr-2 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                            </svg>
+                            Artículo
+                        </label>
+                        <select id="addArticulo" class="form-input w-full px-4 py-3 rounded-lg" required>
+                            <option value="">Seleccione un artículo</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="addCantidad" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <svg class="w-4 h-4 inline mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
+                            </svg>
+                            Cantidad
+                        </label>
+                        <input 
+                            type="number" 
+                            id="addCantidad" 
+                            min="1" 
+                            class="form-input w-full px-4 py-3 rounded-lg" 
+                            required
+                            oninput="validarCantidad(this)"
+                        >
+                        <p id="cantidadError" class="text-red-500 text-xs italic hidden mt-1"></p>
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <label for="addCantidad" class="block text-gray-700 text-sm font-bold mb-2">Cantidad:</label>
-                    <input type="number" id="addCantidad" min="1" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                
+                <div>
+                    <label for="addObservaciones" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <svg class="w-4 h-4 inline mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                        </svg>
+                        Observaciones
+                    </label>
+                    <textarea 
+                        id="addObservaciones" 
+                        rows="3" 
+                        class="form-input w-full px-4 py-3 rounded-lg" 
+                        placeholder="Detalles adicionales sobre la solicitud..."
+                    ></textarea>
                 </div>
-                <div class="mb-4">
-                    <label for="addObservaciones" class="block text-gray-700 text-sm font-bold mb-2">Observaciones:</label>
-                    <textarea id="addObservaciones" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" rows="3"></textarea>
-                </div>
-                <div class="flex justify-end mt-6">
-                    <button type="button" id="cancelAddRequestButton" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2">
+                
+                <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                    <button type="button" id="cancelAddRequestButton" 
+                            class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
                         Cancelar
                     </button>
-                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    <button type="submit" 
+                            class="btn-success px-6 py-3 text-white font-semibold rounded-lg">
                         Enviar Solicitud
                     </button>
                 </div>
@@ -195,53 +488,85 @@
         </div>
     </div>
 
-    <!-- Admin Action Modal (for administrators) -->
+    <!-- Modal para acciones de administrador -->
     <div id="adminActionModal" class="modal">
         <div class="modal-content">
             <span class="close-button" id="closeAdminActionModalButton">&times;</span>
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">Detalles y Acción de Solicitud</h2>
-            <form id="adminActionForm">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 pr-8">Detalles y Acción de Solicitud</h2>
+            <form id="adminActionForm" class="space-y-6">
                 <input type="hidden" id="adminSolicitudId">
                 <input type="hidden" id="adminDetalleId">
                 <input type="hidden" id="adminArticuloId">
 
-                <div class="mb-2">
-                    <strong class="block text-gray-700 text-sm font-bold">Solicitante:</strong>
-                    <p id="adminSolicitante" class="text-gray-900"></p>
-                </div>
-                <div class="mb-2">
-                    <strong class="block text-gray-700 text-sm font-bold">Artículo Solicitado:</strong>
-                    <p id="adminArticulo" class="text-gray-900"></p>
-                </div>
-                <div class="mb-2">
-                    <strong class="block text-gray-700 text-sm font-bold">Cantidad Solicitada:</strong>
-                    <p id="adminCantidad" class="text-gray-900"></p>
-                </div>
-                <div class="mb-2">
-                    <strong class="block text-gray-700 text-sm font-bold">Observaciones del Solicitante:</strong>
-                    <p id="adminObservaciones" class="text-gray-900 break-words"></p>
-                </div>
-                <div class="mb-4">
-                    <strong class="block text-gray-700 text-sm font-bold">Estado Actual:</strong>
-                    <p id="adminEstado" class="text-gray-900 font-semibold"></p>
+                <!-- Información de la solicitud -->
+                <div class="bg-gray-50 rounded-lg p-6 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <strong class="block text-sm font-semibold text-gray-700 mb-1">Solicitante:</strong>
+                            <p id="adminSolicitante" class="text-gray-900 bg-white px-3 py-2 rounded border"></p>
+                        </div>
+                        <div>
+                            <strong class="block text-sm font-semibold text-gray-700 mb-1">Estado Actual:</strong>
+                            <p id="adminEstado" class="text-gray-900 font-semibold bg-white px-3 py-2 rounded border"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <strong class="block text-sm font-semibold text-gray-700 mb-1">Artículo Solicitado:</strong>
+                            <p id="adminArticulo" class="text-gray-900 bg-white px-3 py-2 rounded border"></p>
+                        </div>
+                        <div>
+                            <strong class="block text-sm font-semibold text-gray-700 mb-1">Cantidad Solicitada:</strong>
+                            <p id="adminCantidad" class="text-gray-900 font-semibold bg-white px-3 py-2 rounded border"></p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <strong class="block text-sm font-semibold text-gray-700 mb-1">Observaciones del Solicitante:</strong>
+                        <p id="adminObservaciones" class="text-gray-900 bg-white px-3 py-2 rounded border min-h-[60px]"></p>
+                    </div>
                 </div>
 
-                <div class="mb-4">
-                    <label for="adminRespuesta" class="block text-gray-700 text-sm font-bold mb-2">Respuesta / Razón (Opcional):</label>
-                    <textarea id="adminRespuesta" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" rows="3" placeholder="Mensaje para el solicitante..."></textarea>
+                <div>
+                    <label for="adminRespuesta" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <svg class="w-4 h-4 inline mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                        Respuesta / Comentarios (Opcional)
+                    </label>
+                    <textarea 
+                        id="adminRespuesta" 
+                        rows="3" 
+                        class="form-input w-full px-4 py-3 rounded-lg" 
+                        placeholder="Mensaje para el solicitante..."
+                    ></textarea>
                 </div>
 
-                <div class="flex justify-end mt-6 space-x-2">
-                    <button type="button" id="rejectButton" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+                    <button type="button" id="rejectButton" 
+                            class="btn-danger px-6 py-3 text-white font-semibold rounded-lg">
+                        <svg class="w-4 h-4 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
                         Rechazar
                     </button>
-                    <button type="button" id="approveButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    <button type="button" id="approveButton" 
+                            class="btn-primary px-6 py-3 text-white font-semibold rounded-lg">
+                        <svg class="w-4 h-4 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
                         Aprobar
                     </button>
-                    <button type="button" id="completeButton" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                        Marcar como Completada
+                    <button type="button" id="completeButton" 
+                            class="btn-purple px-6 py-3 text-white font-semibold rounded-lg">
+                        <svg class="w-4 h-4 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Completar
                     </button>
-                    <button type="button" id="cancelAdminActionButton" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    <button type="button" id="cancelAdminActionButton" 
+                            class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
                         Cancelar
                     </button>
                 </div>
@@ -249,21 +574,19 @@
         </div>
     </div>
 
-
     <script>
         const solicitudesTableBody = document.getElementById('solicitudesTableBody');
         const addRequestModal = document.getElementById('addRequestModal');
         const adminActionModal = document.getElementById('adminActionModal');
         const addArticuloSelect = document.getElementById('addArticulo');
+        const emptyState = document.getElementById('emptyState');
 
-        // Assume global role for this frontend example. In a real app, this would come from auth.
-        // For testing, you can change this to 'admin' or 'user'
-        const currentUserRole = 'admin'; // 'user' or 'admin'
-        // Placeholder for logged-in user ID (replace with actual auth info)
-        const currentUserId = 1; // Example user ID (if a user is logged in)
-        const currentAdminId = 2; // Example admin user ID
+        // Configuración de usuario (en una aplicación real vendría de autenticación)
+        const currentUserRole = 'admin'; // 'user' o 'admin'
+        const currentUserId = 1;
+        const currentAdminId = 2;
 
-        // --- Utility Functions ---
+        // --- Funciones de utilidad ---
         function openModal(modalId) {
             document.getElementById(modalId).style.display = 'flex';
         }
@@ -283,8 +606,28 @@
             return `${year}-${month}-${day} ${hours}:${minutes}`;
         }
 
-        // --- API Fetching Functions ---
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('es-ES', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            document.getElementById('lastUpdate').textContent = `Última actualización: ${timeString}`;
+        }
 
+        function getStatusBadge(estado) {
+            const statusClass = `status-${estado.toLowerCase().replace(' ', '-')}`;
+            const icons = {
+                'pendiente': '<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+                'aprobada': '<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>',
+                'rechazada': '<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>',
+                'completada': '<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+            };
+            const icon = icons[estado.toLowerCase()] || '';
+            return `<span class="${statusClass}">${icon}${estado}</span>`;
+        }
+
+        // --- Funciones de API ---
         async function fetchArticulosForDropdown() {
             try {
                 const response = await fetch('/api/articulos');
@@ -292,8 +635,8 @@
                 const articulos = await response.json();
                 populateArticuloDropdown(articulos);
             } catch (error) {
-                console.error('Error al obtener artículos para el dropdown:', error);
-                alert('Error al cargar la lista de artículos para la solicitud.');
+                console.error('Error al obtener artículos:', error);
+                alert('Error al cargar la lista de artículos.');
             }
         }
 
@@ -302,25 +645,45 @@
             articulos.forEach(articulo => {
                 const option = document.createElement('option');
                 option.value = articulo.id_articulo;
-                option.textContent = `${articulo.nombre_articulo} (Stock: ${articulo.stock})`;
+                option.textContent = `${articulo.nombre_articulo} (Stock: ${articulo.cantidad})`;
+                option.setAttribute('data-stock', articulo.cantidad);
                 addArticuloSelect.appendChild(option);
             });
+            
+            addArticuloSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const maxStock = selectedOption ? parseInt(selectedOption.getAttribute('data-stock')) : 0;
+                document.getElementById('addCantidad').max = maxStock;
+            });
+        }
+
+        function validarCantidad(input) {
+            const errorElement = document.getElementById('cantidadError');
+            const selectedOption = addArticuloSelect.options[addArticuloSelect.selectedIndex];
+            const maxStock = selectedOption ? parseInt(selectedOption.getAttribute('data-stock')) : 0;
+            
+            if (input.value > maxStock) {
+                errorElement.textContent = `No puede solicitar más de ${maxStock} unidades`;
+                errorElement.classList.remove('hidden');
+                input.setCustomValidity('Cantidad excede el stock disponible');
+            } else {
+                errorElement.classList.add('hidden');
+                input.setCustomValidity('');
+            }
         }
 
         async function fetchSolicitudes() {
             try {
-                // In a real application, you might filter requests based on the logged-in user's ID/role.
-                // For now, if not admin, we fetch all and filter in frontend for display.
                 const response = await fetch('/api/solicitudes');
                 if (!response.ok) throw new Error('Failed to fetch requests');
                 const solicitudes = await response.json();
 
-                // If user is not an admin, filter to show only their own requests
                 const filteredSolicitudes = currentUserRole === 'admin'
                     ? solicitudes
-                    : solicitudes.filter(s => s.id_usuario === currentUserId); // Assuming `id_usuario` is the requester's ID
+                    : solicitudes.filter(s => s.id_usuario === currentUserId);
 
                 displaySolicitudes(filteredSolicitudes);
+                updateLastUpdateTime();
             } catch (error) {
                 console.error('Error al obtener solicitudes:', error);
                 alert('Error al cargar las solicitudes.');
@@ -329,36 +692,55 @@
 
         function displaySolicitudes(solicitudes) {
             solicitudesTableBody.innerHTML = '';
+            
             if (solicitudes.length === 0) {
-                solicitudesTableBody.innerHTML = `<tr><td colspan="9" class="px-6 py-4 text-center text-gray-500">No hay solicitudes para mostrar.</td></tr>`;
+                emptyState.classList.remove('hidden');
                 return;
             }
+            
+            emptyState.classList.add('hidden');
 
             solicitudes.forEach(solicitud => {
                 const row = document.createElement('tr');
-                const statusClass = `status-${solicitud.estado.toLowerCase().replace(' ', '-')}`;
+                row.className = 'hover:bg-gray-50 transition-colors';
 
                 row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${solicitud.id_solicitud}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${solicitud.nombre_usuario || 'N/A'}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${solicitud.nombre_articulo || 'N/A'}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${solicitud.cantidad_solicitada}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm ${statusClass}">${solicitud.estado}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatFechaHora(solicitud.fecha_solicitud)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatFechaHora(solicitud.fecha_accion_admin) || 'Pendiente'}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        ${currentUserRole === 'admin' && solicitud.estado === 'pendiente' ?
-                            `<button onclick="openAdminActionModal(${solicitud.id_solicitud})" class="text-blue-600 hover:text-blue-900 mr-2">Revisar</button>` :
-                            currentUserRole === 'admin' && solicitud.estado === 'aprobada' ?
-                            `<button onclick="openAdminActionModal(${solicitud.id_solicitud})" class="text-purple-600 hover:text-purple-900 mr-2">Completar</button>` :
-                            currentUserRole === 'admin' ?
-                            `<button onclick="openAdminActionModal(${solicitud.id_solicitud})" class="text-gray-600 hover:text-gray-900 mr-2">Ver</button>` :
-                            ''
-                        }
-                         ${currentUserRole === 'admin' ?
-                            `<button onclick="deleteSolicitud(${solicitud.id_solicitud})" class="text-red-600 hover:text-red-900">Eliminar</button>` :
-                            ''
-                        }
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        #${solicitud.id_solicitud}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                        ${solicitud.nombre_usuario || '<span class="text-gray-400">N/A</span>'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        ${solicitud.nombre_articulo || '<span class="text-gray-400">N/A</span>'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                        ${solicitud.cantidad_solicitada}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        ${getStatusBadge(solicitud.estado)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${formatFechaHora(solicitud.fecha_solicitud)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${solicitud.fecha_accion_admin ? formatFechaHora(solicitud.fecha_accion_admin) : '<span class="text-gray-400 italic">Pendiente</span>'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            ${currentUserRole === 'admin' && solicitud.estado === 'pendiente' ?
+                                `<button onclick="openAdminActionModal(${solicitud.id_solicitud})" class="text-blue-600 hover:text-blue-800 font-medium transition-colors">Revisar</button>` :
+                                currentUserRole === 'admin' && solicitud.estado === 'aprobada' ?
+                                `<button onclick="openAdminActionModal(${solicitud.id_solicitud})" class="text-purple-600 hover:text-purple-800 font-medium transition-colors">Completar</button>` :
+                                currentUserRole === 'admin' ?
+                                `<button onclick="openAdminActionModal(${solicitud.id_solicitud})" class="text-gray-600 hover:text-gray-800 font-medium transition-colors">Ver</button>` :
+                                ''
+                            }
+                            ${currentUserRole === 'admin' ?
+                                `<button onclick="deleteSolicitud(${solicitud.id_solicitud})" class="text-red-600 hover:text-red-800 font-medium transition-colors">Eliminar</button>` :
+                                ''
+                            }
+                        </div>
                     </td>
                 `;
                 solicitudesTableBody.appendChild(row);
@@ -368,22 +750,30 @@
         function filtrarSolicitudesTabla() {
             const searchText = document.getElementById('searchInput').value.toLowerCase();
             const rows = solicitudesTableBody.getElementsByTagName('tr');
+            let visibleRows = 0;
 
             Array.from(rows).forEach(row => {
                 const textContent = row.textContent.toLowerCase();
                 if (textContent.includes(searchText)) {
                     row.style.display = '';
+                    visibleRows++;
                 } else {
                     row.style.display = 'none';
                 }
             });
+
+            if (visibleRows === 0 && searchText.length > 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
         }
 
-        // --- User Request Functions ---
-
+        // --- Funciones de solicitudes de usuario ---
         function openAddRequestModal() {
             document.getElementById('addRequestForm').reset();
-            fetchArticulosForDropdown(); // Populate dropdown every time
+            document.getElementById('cantidadError').classList.add('hidden');
+            fetchArticulosForDropdown();
             openModal('addRequestModal');
         }
 
@@ -394,52 +784,66 @@
             const cantidad = parseInt(document.getElementById('addCantidad').value);
             const observaciones = document.getElementById('addObservaciones').value;
 
-            if (!id_articulo || isNaN(cantidad) || cantidad <= 0) {
-                alert('Por favor, complete todos los campos obligatorios y asegúrese que la cantidad sea válida.');
+            if (!id_articulo || isNaN(cantidad)) {
+                alert('Por favor, complete todos los campos obligatorios.');
                 return;
             }
 
-            const data = {
-                id_usuario_solicitante: currentUserId, // Usar el ID del usuario logeado
-                id_articulo,
-                cantidad,
-                observaciones,
-            };
+            if (cantidad <= 0) {
+                alert('La cantidad solicitada debe ser mayor que cero.');
+                return;
+            }
 
             try {
+                const stockResponse = await fetch(`/api/articulos/${id_articulo}`);
+                if (!stockResponse.ok) throw new Error('Error al verificar stock');
+                
+                const articulo = await stockResponse.json();
+                const stockDisponible = articulo.cantidad;
+
+                if (cantidad > stockDisponible) {
+                    alert(`No hay suficiente stock disponible. Solo hay ${stockDisponible} unidades.`);
+                    return;
+                }
+
+                const data = {
+                    id_articulo,
+                    cantidad,
+                    observaciones,
+                };
+
                 const response = await fetch('/api/solicitudes', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data),
                 });
+
                 const result = await response.json();
 
                 if (response.ok) {
                     alert(result.message);
                     closeModal('addRequestModal');
-                    fetchSolicitudes(); // Refresh the list
+                    fetchSolicitudes();
                 } else {
                     console.error('Error al enviar solicitud:', result.error);
                     alert(`Error al enviar solicitud: ${result.error}`);
                 }
             } catch (error) {
-                console.error('Error de red o del servidor al enviar solicitud:', error);
-                alert('Error de conexión o del servidor al enviar solicitud.');
+                console.error('Error de red o del servidor:', error);
+                alert('Error de conexión o del servidor al procesar la solicitud.');
             }
         }
 
-        // --- Admin Action Functions ---
-
+        // --- Funciones de administrador ---
         async function openAdminActionModal(id) {
             try {
-                // Fetch the specific request details
                 const response = await fetch(`/api/solicitudes/${id}`);
                 if (!response.ok) throw new Error('Failed to fetch request for admin action');
                 const solicitud = await response.json();
 
                 if (solicitud) {
                     document.getElementById('adminSolicitudId').value = solicitud.id_solicitud;
-                    document.getElementById('adminArticuloId').value = solicitud.id_articulo; // Keep article ID for stock update
+                    document.getElementById('adminArticuloId').value = solicitud.id_articulo;
                     document.getElementById('adminSolicitante').textContent = solicitud.nombre_usuario || 'N/A';
                     document.getElementById('adminArticulo').textContent = solicitud.nombre_articulo || 'N/A';
                     document.getElementById('adminCantidad').textContent = solicitud.cantidad_solicitada;
@@ -447,10 +851,29 @@
                     document.getElementById('adminEstado').textContent = solicitud.estado;
                     document.getElementById('adminRespuesta').value = solicitud.respuesta_admin || '';
 
-                    // Disable buttons based on current status for admin actions
-                    document.getElementById('approveButton').disabled = (solicitud.estado !== 'pendiente');
-                    document.getElementById('rejectButton').disabled = (solicitud.estado !== 'pendiente');
-                    document.getElementById('completeButton').disabled = (solicitud.estado !== 'aprobada');
+                    const approveBtn = document.getElementById('approveButton');
+                    const rejectBtn = document.getElementById('rejectButton');
+                    const completeBtn = document.getElementById('completeButton');
+                    const cancelBtn = document.getElementById('cancelAdminActionButton');
+
+                    // Reset visibility
+                    approveBtn.style.display = 'none';
+                    rejectBtn.style.display = 'none';
+                    completeBtn.style.display = 'none';
+                    cancelBtn.style.display = 'inline-block';
+
+                    if (solicitud.estado === 'pendiente') {
+                        approveBtn.style.display = 'inline-block';
+                        rejectBtn.style.display = 'inline-block';
+                    } else if (solicitud.estado === 'aprobada') {
+                        completeBtn.style.display = 'inline-block';
+                    }
+
+                    completeBtn.onclick = () => {
+                        if (confirm('¿Estás seguro de que deseas marcar esta solicitud como completada?')) {
+                            updateSolicitudStatus('completada');
+                        }
+                    };
 
                     openModal('adminActionModal');
                 } else {
@@ -465,21 +888,20 @@
         async function updateSolicitudStatus(newStatus) {
             const solicitudId = document.getElementById('adminSolicitudId').value;
             const id_articulo = document.getElementById('adminArticuloId').value;
-            const cantidad = parseInt(document.getElementById('adminCantidad').textContent); // Get quantity from display
+            const cantidad = parseInt(document.getElementById('adminCantidad').textContent);
             const respuesta_admin = document.getElementById('adminRespuesta').value;
 
             const data = {
                 estado: newStatus,
                 respuesta_admin: respuesta_admin,
-                id_usuario_admin: currentAdminId, // Admin user who made the action
-                // Incluir id_articulo y cantidad para manejo de stock en backend si aplica
+                id_usuario_admin: currentAdminId,
                 id_articulo: id_articulo,
                 cantidad: cantidad
             };
 
             try {
                 const response = await fetch(`/api/solicitudes/${solicitudId}`, {
-                    method: 'PUT', // Assuming PUT endpoint for updates
+                    method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data),
                 });
@@ -488,7 +910,7 @@
                 if (response.ok) {
                     alert(result.message);
                     closeModal('adminActionModal');
-                    fetchSolicitudes(); // Refresh the list
+                    fetchSolicitudes();
                 } else {
                     console.error(`Error al ${newStatus.toLowerCase()} solicitud:`, result.error);
                     alert(`Error al ${newStatus.toLowerCase()} solicitud: ${result.error}`);
@@ -520,18 +942,17 @@
             }
         }
 
-
         // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', fetchSolicitudes);
         document.getElementById('searchInput').addEventListener('keyup', filtrarSolicitudesTabla);
 
-        // Add Request Modal Listeners
+        // Modal de nueva solicitud
         document.getElementById('addRequestButton').addEventListener('click', openAddRequestModal);
         document.getElementById('closeAddRequestModalButton').addEventListener('click', () => closeModal('addRequestModal'));
         document.getElementById('cancelAddRequestButton').addEventListener('click', () => closeModal('addRequestModal'));
         document.getElementById('addRequestForm').addEventListener('submit', handleAddSubmit);
 
-        // Admin Action Modal Listeners
+        // Modal de acciones de administrador
         document.getElementById('closeAdminActionModalButton').addEventListener('click', () => closeModal('adminActionModal'));
         document.getElementById('cancelAdminActionButton').addEventListener('click', () => closeModal('adminActionModal'));
         document.getElementById('approveButton').addEventListener('click', () => {
@@ -540,11 +961,8 @@
         document.getElementById('rejectButton').addEventListener('click', () => {
             updateSolicitudStatus('rechazada');
         });
-        document.getElementById('completeButton').addEventListener('click', () => {
-            updateSolicitudStatus('completada');
-        });
 
-        // Close modals when clicking outside
+        // Cerrar modales al hacer clic fuera
         window.addEventListener('click', (event) => {
             const modals = ['addRequestModal', 'adminActionModal'];
             modals.forEach(modalId => {
@@ -554,6 +972,9 @@
                 }
             });
         });
+
+        // Actualizar la hora cada minuto
+        setInterval(updateLastUpdateTime, 60000);
     </script>
 </body>
 </html>

@@ -1,242 +1,652 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Inventario MUNI Quilleco</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario MUNI Quilleco - Dashboard</title>
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
-    <link
-      rel="stylesheet"
-      as="style"
-      onload="this.rel='stylesheet'"
-      href="https://fonts.googleapis.com/css2?display=swap&family=Manrope:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900"
-    />
+    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Manrope%3Awght%40400%3B500%3B700%3B800&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  </head>
-  <body style='font-family: Manrope, "Noto Sans", sans-serif;'>
-    <div class="relative flex min-h-screen flex-col bg-white overflow-x-hidden">
-      <div class="layout-container flex h-full grow flex-col">
-        <header class="flex items-center justify-between border-b border-[#f1f4f1] px-10 py-3">
-          <div class="flex items-center gap-8">
-            <div class="flex items-center gap-4 text-[#131712]">
-              <div class="size-6 text-[#0c7ff2]">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
+    <style>
+        /* Mejoras visuales para las tarjetas */
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .stat-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        /* Animaciones suaves */
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            transform: translateX(4px);
+        }
+        
+        /* Gradiente mejorado para el título */
+        .gradient-text {
+            background: linear-gradient(135deg, #10b981, #3b82f6, #8b5cf6);
+            background-size: 200% 200%;
+            animation: gradient-shift 3s ease infinite;
+        }
+        
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Efectos para las actividades */
+        .activity-item {
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .activity-item:hover {
+            background-color: #f8fafc;
+            border-left-color: #3b82f6;
+            transform: translateX(4px);
+        }
+        
+        /* Iconos con gradientes */
+        .icon-gradient-blue {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+        
+        .icon-gradient-green {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .icon-gradient-yellow {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .icon-gradient-red {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        
+        .icon-gradient-purple {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+        
+        /* Números animados */
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1f2937, #374151);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: countUp 0.8s ease-out;
+        }
+        
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Secciones de contenido */
+        .content-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(255,255,255,0.2);
+            overflow: hidden;
+        }
+        
+        /* Badges de estado */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .status-ingreso {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .status-retiro {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        
+        .status-ajuste {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+        
+        .status-baja {
+            background: linear-gradient(135deg, #7c2d12, #991b1b);
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 flex h-screen font-sans">
+    <!-- Sidebar mejorada -->
+    <aside class="w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col shadow-2xl">
+        <!-- Header del sidebar -->
+        <header class="p-6 text-center border-b border-gray-700 bg-gray-900/50 backdrop-blur-sm">
+            <h1 class="text-xl font-bold">
+                <span class="bg-clip-text text-transparent gradient-text">
+                    Gestión Inventario
+                </span>
+            </h1>
+            <p class="text-xs text-gray-400 mt-1">Municipalidad de Quilleco</p>
+        </header>
+        
+        <!-- Navegación -->
+        <nav class="flex-1 px-3 py-6 space-y-1" role="navigation" aria-label="Navegación principal">
+            <a href="/main.html" class="nav-link flex items-center px-4 py-3 text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg" aria-current="page">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2 2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                 </svg>
-              </div>
-              <h2 class="text-lg font-bold tracking-[-0.015em]">Sistema de Inventario</h2>
+                <span class="font-medium">Inicio</span>
+                <div class="ml-auto w-2 h-2 bg-blue-300 rounded-full"></div>
+            </a>
+            
+            <a href="/articulos.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5.989A2 2 0 0115 5.01V21l-5-2-5 2V5.01A2 2 0 017.011 3z"/>
+                </svg>
+                <span class="font-medium">Artículos</span>
+            </a>
+            
+            <a href="/movimientos.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                </svg>
+                <span class="font-medium">Movimientos</span>
+            </a>
+            
+            <a href="/proveedores.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h-4c-1.105 0-2-.895-2-2v-3c0-.552.448-1 1-1h4c.552 0 1 .448 1 1v3c0 1.105-.895 2-2 2zm-5-14a4 4 0 11-8 0 4 4 0 018 0zM12 21v-4"/>
+                </svg>
+                <span class="font-medium">Proveedores</span>
+            </a>
+            
+            <a href="/categorias.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H7a2 2 0 00-2 2v2m7-7V3"/>
+                </svg>
+                <span class="font-medium">Categorías</span>
+            </a>
+            
+            <a href="/marcas.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2 2m-2-2l-2 2m0 0l2 2m-2-2L9 5m7 6v4m-2-2h4m-7 0a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span class="font-medium">Marcas</span>
+            </a>
+            
+            <a href="/solicitudes.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                </svg>
+                <span class="font-medium">Solicitudes</span>
+            </a>
+        </nav>
+        
+        <!-- Footer del sidebar -->
+        <footer class="p-4 border-t border-gray-700 bg-gray-900/30">
+            <a href="/logout" class="nav-link flex items-center px-4 py-3 text-red-400 hover:bg-red-900/20 hover:text-red-300 rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                <span class="font-medium">Cerrar Sesión</span>
+            </a>
+        </footer>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header del contenido -->
+        <header class="bg-white shadow-sm border-b border-gray-200 px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-3 rounded-xl mr-4">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+                        <p class="text-gray-600 mt-1">Resumen general del sistema de inventario</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            placeholder="Buscar..." 
+                            class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        >
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 text-sm text-gray-500">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span id="lastUpdate">Última actualización: Ahora</span>
+                    </div>
+                </div>
             </div>
-            <nav class="flex items-center gap-9">
-              <a class="text-sm font-medium" href="/main.html">Dashboard</a>
-              <a class="text-sm font-medium" href="/articulos.html">Articulos</a>
-              <a class="text-sm font-medium" href="/proveedores.html">Proveedores</a>
-              <a class="text-sm font-medium" href="#">Usuarios</a>
-              <a class="text-sm font-medium" href="/solicitudes.html">Solicitudes</a>
-              <a class="text-sm font-medium" href="#">Recepciones</a>
-            </nav>
-          </div>
-          <div class="flex items-center gap-8">
-            <label class="flex w-64 h-10">
-              <div class="flex items-center justify-center pl-4 bg-[#f1f4f1] rounded-l-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
-                  <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z" />
-                </svg>
-              </div>
-              <input
-                placeholder="Search"
-                class="w-full flex-1 px-4 bg-[#f1f4f1] rounded-r-lg text-sm focus:outline-none"
-              />
-            </label>
-            <div
-              class="size-10 rounded-full bg-cover bg-center"
-              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCMKo0ZWi5MrH51R1yrD2BmMBevFdzqEttaC0k8Y3WhGtLRc-AG70EzCCvvPEeF0g8CxDPlqqRne1Z2nKyzNXm6R4qpYQa1KGFOC95x4ZHciXa33RXT100FIKLiI2_K8hnAQq4QpeAesN-Oa6I_vXt3n4qdecI8wbm2YjxpxqvztfEbsYIJ5xaNjpo98yFrbVE30wR4hNEPXlrc5C93ooIW1_noV4sjw433fiz9Dxnuc9I3dN9_PZuIPdi_9mmTDaGu2XB3o6wsHws");'
-            ></div>
-          </div>
         </header>
 
-        <main class="px-40 py-5 flex-1">
-          <div class="max-w-[960px] mx-auto">
-            <div class="p-4">
-              <p class="text-[32px] font-bold">Dashboard</p>
-            </div>
-            <div class="flex flex-wrap gap-4 p-4">
-              <div class="flex-1 min-w-[158px] p-6 rounded-lg bg-[#f1f4f1]">
-                <p class="text-base font-medium">Artículos Totales</p>
-                <p id="totalItems" class="text-2xl font-bold">0</p>
-              </div>
-              <div class="flex-1 min-w-[158px] p-6 rounded-lg bg-[#f1f4f1]">
-                <p class="text-base font-medium">Cantidad de Stock</p>
-                <p id="stockLevel" class="text-2xl font-bold">0</p>
-              </div>
-              <div class="flex-1 min-w-[158px] p-6 rounded-lg bg-[#f1f4f1]">
-                <p class="text-base font-medium">Solicitudes Pendientes</p>
-                <p id="pendingRequests" class="text-2xl font-bold">0</p>
-              </div>
-            </div>
+        <!-- Área de contenido con scroll -->
+        <div class="flex-1 p-8 overflow-y-auto">
+            <!-- Tarjetas de estadísticas -->
+            <section class="mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Artículos Totales -->
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-600 mb-1">Artículos Totales</p>
+                                <p class="stat-number" id="totalItems">0</p>
+                            </div>
+                            <div class="icon-gradient-blue p-3 rounded-xl">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <svg class="w-4 h-4 mr-1 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                            </svg>
+                            <span>Actualizado hace 5 min</span>
+                        </div>
+                    </div>
 
-            <h2 class="text-[22px] font-bold px-4 pt-5 pb-3">Actividad Reciente</h2>
-            <div class="px-4 py-3 rounded-lg border border-[#dee4dc] bg-white">
-              <div id="movimientosRecientesContainer">
-                <p class="text-sm text-gray-500" id="noMovimientosMessage">Sin movimientos recientes aún.</p>
-              </div>
-            </div>
+                    <!-- Stock Total -->
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-600 mb-1">Cantidad de Stock</p>
+                                <p class="stat-number" id="stockLevel">0</p>
+                            </div>
+                            <div class="icon-gradient-green p-3 rounded-xl">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <svg class="w-4 h-4 mr-1 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            <span>Total en inventario</span>
+                        </div>
+                    </div>
 
-            <h2 class="text-[22px] font-bold px-4 pt-5 pb-3">Solicitudes Pendientes</h2>
-            <div class="px-4 py-3 rounded-lg border border-[#dee4dc] bg-white">
-              <p class="text-sm text-gray-500">Sin solicitudes pendientes aún.</p>
-            </div>
-          </div>
-        </main>
-      </div>
-    </div>
+                    <!-- Solicitudes Pendientes -->
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-600 mb-1">Solicitudes Pendientes</p>
+                                <p class="stat-number" id="pendingRequests">0</p>
+                            </div>
+                            <div class="icon-gradient-yellow p-3 rounded-xl">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <svg class="w-4 h-4 mr-1 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span>Por revisar</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-    <template id="movimientoTemplate">
-      <div class="flex items-center gap-2 p-2 border-b border-[#dee4dc] last:border-b-0">
-        <div class="size-8 rounded-full flex items-center justify-center text-white text-xs font-semibold" data-type-color>
-          </div>
-        <div>
-          <p class="text-sm font-semibold" data-movimiento-title>Título del movimiento</p>
-          <p class="text-xs text-gray-600" data-movimiento-details>Detalles</p>
-          <p class="text-xs text-gray-600" data-movimiento-fecha>Fecha y hora</p>
+            <!-- Actividad Reciente -->
+            <section class="mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Actividad Reciente</h2>
+                        <p class="text-gray-600 mt-1">Últimos movimientos de inventario</p>
+                    </div>
+                    <a href="/movimientos.html" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+                        <span>Ver todo</span>
+                        <svg class="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+                
+                <div class="content-section">
+                    <div id="movimientosRecientesContainer" class="divide-y divide-gray-200">
+                        <div class="p-6 text-center text-gray-500">
+                            <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                            </svg>
+                            <p id="noMovimientosMessage">Cargando movimientos recientes...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Solicitudes Pendientes -->
+            <section class="mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Solicitudes Pendientes</h2>
+                        <p class="text-gray-600 mt-1">Solicitudes que requieren atención</p>
+                    </div>
+                    <a href="/solicitudes.html" class="inline-flex items-center px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white font-medium rounded-lg transition-colors">
+                        <span>Ver todas</span>
+                        <svg class="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+                
+                <div class="content-section">
+                    <div id="solicitudesPendientesContainer" class="divide-y divide-gray-200">
+                        <div class="p-6 text-center text-gray-500">
+                            <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                            </svg>
+                            <p>Cargando solicitudes pendientes...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
-        <span class="ml-auto text-sm font-bold" data-movimiento-cantidad>+0</span>
-      </div>
+    </main>
+
+    <!-- Template para movimientos -->
+    <template id="movimientoTemplate">
+        <div class="activity-item flex items-center gap-4 p-6">
+            <div class="flex size-12 shrink-0 items-center justify-center rounded-xl text-white" data-type-color></div>
+            <div class="min-w-0 flex-1">
+                <p class="text-sm font-bold text-gray-900 mb-1" data-movimiento-title>Título del movimiento</p>
+                <p class="text-sm text-gray-600 mb-1" data-movimiento-details>Detalles</p>
+                <p class="text-xs text-gray-500 italic mb-2" data-movimiento-observacion>Observación del movimiento</p>
+                <p class="text-xs text-gray-400" data-movimiento-fecha>Fecha y hora</p>
+            </div>
+            <div class="text-right">
+                <span class="text-lg font-bold" data-movimiento-cantidad>+0</span>
+                <p class="text-xs text-gray-500 mt-1">unidades</p>
+            </div>
+        </div>
+    </template>
+
+    <!-- Template para solicitudes pendientes -->
+    <template id="solicitudPendienteTemplate">
+        <div class="activity-item flex items-center gap-4 p-6">
+            <div class="flex size-12 shrink-0 items-center justify-center rounded-xl icon-gradient-yellow">
+                <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+                </svg>
+            </div>
+            <div class="min-w-0 flex-1">
+                <p class="text-sm font-bold text-gray-900 mb-1" data-solicitud-articulo>Artículo</p>
+                <p class="text-sm text-gray-600 mb-1">Solicitado por: <span class="font-medium" data-solicitud-usuario>Usuario</span></p>
+                <p class="text-sm text-gray-600 mb-2">Cantidad: <span class="font-bold" data-solicitud-cantidad>0</span></p>
+                <p class="text-xs text-gray-400" data-solicitud-fecha>Fecha</p>
+            </div>
+            <a href="/solicitudes.html" class="inline-flex items-center px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 font-medium rounded-lg transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+                Revisar
+            </a>
+        </div>
     </template>
 
     <script>
-      async function cargarEstadisticas() {
-        try {
-          const [itemsRes, stockRes, reqRes] = await Promise.all([
-            fetch('/api/stats/total-items'),
-            fetch('/api/stats/stock-level'),
-            fetch('/api/stats/pending-requests')
-          ]);
-
-          const items = await itemsRes.json();
-          const stock = await stockRes.json();
-          const requests = await reqRes.json();
-
-          document.getElementById('totalItems').innerText = items.total ?? 0;
-          document.getElementById('stockLevel').innerText = stock.total ?? 0;
-          document.getElementById('pendingRequests').innerText = requests.total ?? 0;
-        } catch (err) {
-          console.error('Error cargando estadísticas:', err);
-        }
-      }
-
-      async function cargarMovimientosRecientes() {
-        try {
-          const response = await fetch('/api/movimientos');
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const movimientos = await response.json();
-          
-          const container = document.getElementById('movimientosRecientesContainer');
-          const noMovimientosMessage = document.getElementById('noMovimientosMessage');
-          const template = document.getElementById('movimientoTemplate');
-
-          // Limpiar mensajes anteriores y contenedores
-          container.innerHTML = ''; 
-
-          if (movimientos.length === 0) {
-            // Asegurarse de que el mensaje de "No movimientos" esté presente
-            if (noMovimientosMessage) {
-                container.appendChild(noMovimientosMessage); 
-            } else {
-                // Si el mensaje fue removido y ahora no hay movimientos, recrearlo
-                const p = document.createElement('p');
-                p.id = 'noMovimientosMessage';
-                p.classList.add('text-sm', 'text-gray-500');
-                p.textContent = 'Sin movimientos recientes aún.';
-                container.appendChild(p);
-            }
-          } else {
-            // Si hay movimientos, asegurarse de que el mensaje de "No movimientos" no esté
-            if (noMovimientosMessage) {
-                noMovimientosMessage.remove(); 
-            }
-
-            movimientos.forEach(movimiento => {
-              const clone = document.importNode(template.content, true);
-              const typeDiv = clone.querySelector('[data-type-color]');
-              const titleP = clone.querySelector('[data-movimiento-title]');
-              const detailsP = clone.querySelector('[data-movimiento-details]');
-              const fechaP = clone.querySelector('[data-movimiento-fecha]');
-              const cantidadSpan = clone.querySelector('[data-movimiento-cantidad]');
-
-              const nombreArticulo = movimiento.nombre_articulo; // Podría ser 'Artículo Eliminado'
-              const categoria = movimiento.nombre_categoria;
-              const proveedor = movimiento.nombre_proveedor;
-              const marca = movimiento.nombre_marca;
-              const usuarioAccion = movimiento.nombre_usuario || 'Desconocido';
-
-              // Construye el título del movimiento
-              titleP.textContent = `${nombreArticulo} - ${movimiento.tipo_movimiento.charAt(0).toUpperCase() + movimiento.tipo_movimiento.slice(1)}`;
-              
-              // Construye los detalles del movimiento
-              detailsP.textContent = `${categoria} - ${marca} - ${proveedor} (por ${usuarioAccion})`;
-              
-              // Formatear la fecha
-              fechaP.textContent = new Date(movimiento.fecha).toLocaleString();
-
-              let cantidadTexto = '';
-              let colorClass = '';
-              let initials = '';
-
-              switch (movimiento.tipo_movimiento) {
-                case 'entrada':
-                  cantidadTexto = `+${movimiento.cantidad}`;
-                  colorClass = 'bg-green-500';
-                  initials = 'E';
-                  break;
-                case 'salida':
-                  cantidadTexto = `-${movimiento.cantidad}`;
-                  colorClass = 'bg-red-500';
-                  initials = 'S';
-                  break;
-                case 'eliminacion':
-                  cantidadTexto = `-${movimiento.cantidad}`;
-                  colorClass = 'bg-gray-500';
-                  initials = 'X'; 
-                  break;
-                case 'edicion':
-                  // Si la cantidad de movimiento es 0 (solo edición de metadatos)
-                  if (movimiento.cantidad === 0) {
-                      cantidadTexto = 'Ajuste';
-                      colorClass = 'bg-blue-500';
-                      initials = 'A'; 
-                  } else { // Si la edición también implica un cambio de cantidad
-                      cantidadTexto = movimiento.cantidad > 0 ? `+${movimiento.cantidad}` : `${movimiento.cantidad}`;
-                      colorClass = movimiento.cantidad > 0 ? 'bg-green-500' : 'bg-red-500';
-                      initials = 'A';
-                  }
-                  break;
-                default:
-                  cantidadTexto = `±${movimiento.cantidad}`;
-                  colorClass = 'bg-purple-500';
-                  initials = '?';
-              }
-              
-              cantidadSpan.textContent = cantidadTexto;
-              typeDiv.classList.add(colorClass);
-              typeDiv.textContent = initials;
-
-              container.appendChild(clone);
+        // Función para actualizar la hora
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('es-ES', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
             });
-          }
-        } catch (err) {
-          console.error('Error cargando movimientos recientes:', err);
-          document.getElementById('movimientosRecientesContainer').innerHTML = 
-            '<p class="text-sm text-red-500">Error al cargar movimientos.</p>';
+            document.getElementById('lastUpdate').textContent = `Última actualización: ${timeString}`;
         }
-      }
 
-      // Llama a ambas funciones cuando la página se carga
-      window.onload = async () => {
-          await cargarEstadisticas();
-          await cargarMovimientosRecientes(); 
-      };
+        // Cargar estadísticas
+        async function cargarEstadisticas() {
+            try {
+                const [itemsRes, stockRes, reqRes] = await Promise.all([
+                    fetch('/api/stats/total-items'),
+                    fetch('/api/stats/stock-level'),
+                    fetch('/api/stats/pending-requests')
+                ]);
+
+                const items = await itemsRes.json();
+                const stock = await stockRes.json();
+                const requests = await reqRes.json();
+
+                // Animación de conteo
+                animateNumber('totalItems', items.total ?? 0);
+                animateNumber('stockLevel', stock.total ?? 0);
+                animateNumber('pendingRequests', requests.total ?? 0);
+                
+                updateLastUpdateTime();
+            } catch (err) {
+                console.error('Error cargando estadísticas:', err);
+                document.getElementById('totalItems').innerText = '0';
+                document.getElementById('stockLevel').innerText = '0';
+                document.getElementById('pendingRequests').innerText = '0';
+            }
+        }
+
+        // Función para animar números
+        function animateNumber(elementId, targetValue) {
+            const element = document.getElementById(elementId);
+            const startValue = 0;
+            const duration = 1000;
+            const startTime = performance.now();
+
+            function updateNumber(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const currentValue = Math.floor(startValue + (targetValue - startValue) * progress);
+                
+                element.textContent = currentValue.toLocaleString();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateNumber);
+                }
+            }
+            
+            requestAnimationFrame(updateNumber);
+        }
+
+        // Cargar movimientos recientes
+        async function cargarMovimientosRecientes() {
+            try {
+                const response = await fetch('/api/movimientos');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const movimientos = await response.json();
+                
+                const container = document.getElementById('movimientosRecientesContainer');
+                const template = document.getElementById('movimientoTemplate');
+
+                container.innerHTML = '';
+
+                if (movimientos.length === 0) {
+                    container.innerHTML = `
+                        <div class="p-6 text-center text-gray-500">
+                            <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                            </svg>
+                            <p>Sin movimientos recientes aún.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Mostrar solo los últimos 5 movimientos
+                const movimientosRecientes = movimientos.slice(0, 5);
+
+                movimientosRecientes.forEach(movimiento => {
+                    const clone = document.importNode(template.content, true);
+                    const typeDiv = clone.querySelector('[data-type-color]');
+                    const titleP = clone.querySelector('[data-movimiento-title]');
+                    const detailsP = clone.querySelector('[data-movimiento-details]');
+                    const observacionP = clone.querySelector('[data-movimiento-observacion]');
+                    const fechaP = clone.querySelector('[data-movimiento-fecha]');
+                    const cantidadSpan = clone.querySelector('[data-movimiento-cantidad]');
+
+                    const nombreArticulo = movimiento.nombre_articulo || 'Artículo Eliminado';
+                    const categoria = movimiento.nombre_categoria || 'Sin categoría';
+                    const proveedor = movimiento.nombre_proveedor || 'Sin proveedor';
+                    const marca = movimiento.nombre_marca || 'Sin marca';
+                    const usuarioAccion = movimiento.nombre_usuario || 'Desconocido';
+
+                    titleP.textContent = `${nombreArticulo} - ${movimiento.tipo_movimiento.charAt(0).toUpperCase() + movimiento.tipo_movimiento.slice(1)}`;
+                    detailsP.textContent = `${categoria} • ${marca} • ${proveedor} • Por ${usuarioAccion}`;
+                    observacionP.textContent = movimiento.observacion || 'Sin observaciones';
+                    fechaP.textContent = new Date(movimiento.fecha).toLocaleString('es-ES');
+
+                    let cantidadTexto = '';
+                    let colorClass = '';
+                    let iconSVG = '';
+
+                    switch (movimiento.tipo_movimiento.toLowerCase().trim()) {
+                        case 'ingreso':
+                            cantidadTexto = `+${movimiento.cantidad}`;
+                            colorClass = 'icon-gradient-green';
+                            iconSVG = `<svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>`;
+                            break;
+                        case 'retiro':
+                            cantidadTexto = `-${movimiento.cantidad}`;
+                            colorClass = 'icon-gradient-red';
+                            iconSVG = `<svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                            </svg>`;
+                            break;
+                        case 'ajuste':
+                            cantidadTexto = movimiento.cantidad === 0 ? 'Ajuste' : (movimiento.cantidad > 0 ? `+${movimiento.cantidad}` : `${movimiento.cantidad}`);
+                            colorClass = 'icon-gradient-blue';
+                            iconSVG = `<svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>`;
+                            break;
+                        case 'baja':
+                            cantidadTexto = `-${movimiento.cantidad}`;
+                            colorClass = 'bg-gradient-to-r from-red-700 to-red-800';
+                            iconSVG = `<svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>`;
+                            break;
+                        default:
+                            cantidadTexto = `±${movimiento.cantidad}`;
+                            colorClass = 'icon-gradient-purple';
+                            iconSVG = `<svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>`;
+                    }
+
+                    cantidadSpan.textContent = cantidadTexto;
+                    cantidadSpan.className = `text-lg font-bold ${movimiento.tipo_movimiento.toLowerCase() === 'ingreso' ? 'text-green-600' : 
+                        movimiento.tipo_movimiento.toLowerCase() === 'retiro' || movimiento.tipo_movimiento.toLowerCase() === 'baja' ? 'text-red-600' : 
+                        'text-blue-600'}`;
+                    
+                    typeDiv.className = 'flex size-12 shrink-0 items-center justify-center rounded-xl text-white ' + colorClass;
+                    typeDiv.innerHTML = iconSVG;
+
+                    container.appendChild(clone);
+                });
+            } catch (err) {
+                console.error('Error cargando movimientos recientes:', err);
+                document.getElementById('movimientosRecientesContainer').innerHTML = 
+                    '<div class="p-6 text-center text-red-500"><p>Error al cargar movimientos.</p></div>';
+            }
+        }
+
+        // Cargar solicitudes pendientes
+        async function cargarSolicitudesPendientes() {
+            try {
+                const response = await fetch('/api/solicitudes/pendientes');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const solicitudes = await response.json();
+                
+                const container = document.getElementById('solicitudesPendientesContainer');
+                const template = document.getElementById('solicitudPendienteTemplate');
+
+                container.innerHTML = '';
+
+                if (solicitudes.length === 0) {
+                    container.innerHTML = `
+                        <div class="p-6 text-center text-gray-500">
+                            <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                            </svg>
+                            <p>No hay solicitudes pendientes.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Mostrar solo las primeras 5 solicitudes
+                const solicitudesRecientes = solicitudes.slice(0, 5);
+
+                solicitudesRecientes.forEach(solicitud => {
+                    const clone = document.importNode(template.content, true);
+                    
+                    clone.querySelector('[data-solicitud-articulo]').textContent = solicitud.nombre_articulo;
+                    clone.querySelector('[data-solicitud-usuario]').textContent = solicitud.nombre_usuario;
+                    clone.querySelector('[data-solicitud-cantidad]').textContent = solicitud.cantidad_solicitada;
+                    
+                    const fecha = new Date(solicitud.fecha_solicitud);
+                    clone.querySelector('[data-solicitud-fecha]').textContent = fecha.toLocaleString('es-ES');
+                    
+                    const botonRevisar = clone.querySelector('a');
+                    botonRevisar.href = `/solicitudes.html?id=${solicitud.id_solicitud}`;
+                    
+                    container.appendChild(clone);
+                });
+
+            } catch (err) {
+                console.error('Error cargando solicitudes pendientes:', err);
+                document.getElementById('solicitudesPendientesContainer').innerHTML = 
+                    '<div class="p-6 text-center text-red-500"><p>Error al cargar solicitudes pendientes.</p></div>';
+            }
+        }
+
+        // Cargar todo cuando la página se carga
+        window.onload = async () => {
+            await cargarEstadisticas();
+            await cargarMovimientosRecientes();
+            await cargarSolicitudesPendientes();
+        };
+
+        // Actualizar la hora cada minuto
+        setInterval(updateLastUpdateTime, 60000);
     </script>
-  </body>
+</body>
 </html>

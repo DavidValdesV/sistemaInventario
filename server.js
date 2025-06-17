@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
-const mysql = require('mysql2/promise'); // Using promise-based version
-const session = require('express-session'); // NUEVO: Para gestionar sesiones de usuario
+const mysql = require('mysql2/promise');
+const session = require('express-session');
 
 const app = express();
 const PORT = 3000;
@@ -16,15 +16,15 @@ const dbConfig = {
 const pool = mysql.createPool(dbConfig);
 
 // Middleware para parsear bodies de las solicitudes
-app.use(express.urlencoded({ extended: true })); // Para formularios HTML (application/x-www-form-urlencoded)
-app.use(express.json()); // Para bodies JSON (application/json)
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Configuración de la sesión (NUEVO)
 app.use(session({
-    secret: 'tu_secreto_super_seguro_y_largo_aqui', // ¡CAMBIA ESTO por una cadena secreta y compleja!
+    secret: 'tu_secreto_super_seguro_y_largo_aqui',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false } // 'true' si usas HTTPS. Para desarrollo local con HTTP, déjalo en 'false'
+    cookie: { secure: false }
 }));
 
 // Sirve archivos estáticos desde la carpeta 'display'
@@ -44,7 +44,7 @@ function isAuthenticated(req, res, next) {
 // Middleware para verificar si el usuario es administrador (MODIFICADO)
 function requireAdmin(req, res, next) {
     if (req.session && req.session.userRoleName === 'admin') {
-        next(); // El usuario es admin, permite que la solicitud continúe
+        next();
     } else {
         res.status(403).json({ error: 'Acceso denegado. Se requieren permisos de administrador.' });
     }
@@ -70,7 +70,7 @@ app.post('/login', async (req, res) => {
 
     if (rows.length > 0) {
       const user = rows[0];
-      req.session.userId = user.id_usuario;          // <-- guarda aquí
+      req.session.userId = user.id_usuario;        
       req.session.userRoleName = user.nombre_rol;
       res.json({ message: 'Login exitoso', redirectTo: '/main.html', userId: user.id_usuario, userRoleName: user.nombre_rol });
     } else {
@@ -98,7 +98,7 @@ app.post('/logout', (req, res) => {
 // app.get('/api/categorias') - Obtener todas las categorías
 app.get('/api/categorias', async (req, res) => {
     try {
-        const [rows] = await pool.execute('SELECT id_categoria, nombre_categoria FROM categoriaarticulos'); // Usamos el nombre real de tu tabla
+        const [rows] = await pool.execute('SELECT id_categoria, nombre_categoria FROM categoriaarticulos');
         res.json(rows);
     } catch (error) {
         console.error('Error al obtener categorías:', error);
@@ -261,7 +261,7 @@ app.delete('/api/proveedores/:id', async (req, res) => {
 // app.get('/api/marcas') - Obtener todas las marcas
 app.get('/api/marcas', async (req, res) => {
     try {
-        const [rows] = await pool.execute('SELECT id_marca, nombre_marca FROM marcaarticulos'); // Usamos el nombre real de tu tabla
+        const [rows] = await pool.execute('SELECT id_marca, nombre_marca FROM marcaarticulos');
         res.json(rows);
     } catch (error) {
         console.error('Error al obtener marcas:', error);
@@ -450,7 +450,6 @@ app.post('/api/articulos', async (req, res) => {
             return res.status(500).json({ error: 'Error al obtener el ID del artículo después de la inserción.' });
         }
 
-        // Insertar movimiento automático
     // Insertar movimiento automático
     await pool.execute(
         `INSERT INTO Movimientos 
@@ -498,7 +497,7 @@ app.put('/api/articulos/:id', async (req, res) => {
     const finalFechaIngreso = fecha_adquisicion?.trim() || null;
     const finalIdMarca = marca !== undefined && marca !== null && !isNaN(marca) ? parseInt(marca) : null;
 
-    const idUsuarioAccion = 2; // Debería venir de la sesión
+    const idUsuarioAccion = 2;
 
     if (!finalNombreArticulo) return res.status(400).json({ error: 'El nombre del artículo es obligatorio.' });
     if (finalCantidad === null || isNaN(finalCantidad) || finalCantidad < 0) return res.status(400).json({ error: 'La cantidad es obligatoria y debe ser >= 0.' });
@@ -564,7 +563,7 @@ app.put('/api/articulos/:id', async (req, res) => {
 // app.delete('/api/articulos/:id') - Eliminar un artículo
 app.delete('/api/articulos/:id', async (req, res) => {
     const { id } = req.params;
-    const id_usuario = 2; // Usuario por defecto mientras no implementes autenticación
+    const id_usuario = 2;
 
     const connection = await pool.getConnection();
 
@@ -611,7 +610,6 @@ app.delete('/api/articulos/:id', async (req, res) => {
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // --- RUTAS PARA GESTIÓN DE SOLICITUDES ---
-// Middleware para verificar si el usuario está autenticado
 function isAuthenticated(req, res, next) {
     if (req.session && req.session.userId) {
         next();
@@ -685,7 +683,6 @@ app.get('/api/solicitudes', async (req, res) => {
 });
 
 app.get('/api/solicitudes/pendientes', async (req, res) => {
-  //console.log('Accediendo a /api/solicitudes/pendientes'); // <-- Agrega esto
   try {
     const [rows] = await pool.query(`
       SELECT 
@@ -703,7 +700,6 @@ app.get('/api/solicitudes/pendientes', async (req, res) => {
       ORDER BY s.fecha_solicitud DESC
       LIMIT 5
     `);
-    //console.log('Resultados encontrados:', rows.length); // <-- Agrega esto
     res.json(rows);
   } catch (error) {
     console.error('Error al obtener solicitudes pendientes:', error);
@@ -790,11 +786,7 @@ app.put('/api/solicitudes/:id', requireAdmin, async (req, res) => {
         'UPDATE Articulos SET cantidad = cantidad - ? WHERE id_articulo = ?',
         [requestedQuantity, articleIdFromDB]
       );
-
-
-        // Registrar movimiento en tabla Movimientos
-        //console.log('id_usuario_admin que se usará:', id_usuario_admin);
-       // console.log('Insertando movimiento con id_articulo:', articleIdFromDB);
+      
     await connection.execute(
     `INSERT INTO Movimientos 
         (id_articulo, id_usuario, tipo_movimiento, cantidad, fecha, fecha_movimiento, observacion) 
@@ -1403,7 +1395,7 @@ app.post("/logout", (req, res) => {
     }
 
     // Limpiar cookie de sesión
-    res.clearCookie("connect.sid") // Nombre por defecto de express-session
+    res.clearCookie("connect.sid")
 
     res.json({
       success: true,
@@ -1658,7 +1650,7 @@ app.post('/api/usuarios', requireAdmin, async (req, res) => {
 
     const [result] = await pool.execute(
       'INSERT INTO usuarios (rut, nombre_usuario, contrasena, id_rol, id_departamento) VALUES (?, ?, ?, ?, ?)',
-      [rut, nombre_usuario, hashedPassword, id_rol, id_departamento || null] // Usa null si el departamento no se envía
+      [rut, nombre_usuario, hashedPassword, id_rol, id_departamento || null]
     );
 
     res.status(201).json({ 
@@ -1766,4 +1758,6 @@ app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
     console.log('¡Listo para gestionar tu inventario!');
 });
+
+
 

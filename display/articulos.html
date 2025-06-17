@@ -532,7 +532,7 @@
 
         function openEditModal() {
             openModal('editModal');
-            // Populate dropdowns for editing
+
             populateDropdown('/api/proveedores', 'editIdProveedor', 'id_proveedor', 'nombre_proveedor');
             populateDropdown('/api/categorias', 'editIdCategoria', 'id_categoria', 'nombre_categoria');
             populateDropdown('/api/marcas', 'editIdMarca', 'id_marca', 'nombre_marca');
@@ -544,18 +544,18 @@
 
         function openAddModal() {
             openModal('addModal');
-            // Populate dropdowns for adding
+
             populateDropdown('/api/proveedores', 'addIdProveedor', 'id_proveedor', 'nombre_proveedor');
             populateDropdown('/api/categorias', 'addIdCategoria', 'id_categoria', 'nombre_categoria');
             populateDropdown('/api/marcas', 'addIdMarca', 'id_marca', 'nombre_marca');
-            // Reset form when opening to add a new article
+
             document.getElementById('addForm').reset();
         }
 
         function closeAddModal() {
             closeModal('addModal');
             document.getElementById('addFormError').classList.add('hidden');
-            document.getElementById('addForm').reset(); // Clear form when closing
+            document.getElementById('addForm').reset(); 
         }
 
         // Función para formatear fechas
@@ -680,21 +680,21 @@
                 const items = await response.json();
                 const selectElement = document.getElementById(selectElementId);
 
-                // Clear existing options, but keep the "Select" option
+
                 selectElement.innerHTML = '<option value="">Seleccione una opción</option>';
 
                 items.forEach(item => {
                     const option = document.createElement('option');
-                    option.value = item[idKey]; // The ID to be sent to the server
-                    option.textContent = item[nameKey]; // The name to display
+                    option.value = item[idKey];
+                    option.textContent = item[nameKey];
                     if (selectedId !== null && String(item[idKey]) === String(selectedId)) {
-                        option.selected = true; // Select the current item in edit mode
+                        option.selected = true;
                     }
                     selectElement.appendChild(option);
                 });
             } catch (error) {
                 console.error(`Error populating ${selectElementId}:`, error);
-                // Optionally display a user-friendly error message
+                
                 alert(`Error al cargar datos para ${selectElementId}. Por favor, recargue la página.`);
             }
         }

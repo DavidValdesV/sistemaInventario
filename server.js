@@ -685,7 +685,7 @@ app.get('/api/solicitudes', async (req, res) => {
 });
 
 app.get('/api/solicitudes/pendientes', async (req, res) => {
-  console.log('Accediendo a /api/solicitudes/pendientes'); // <-- Agrega esto
+  //console.log('Accediendo a /api/solicitudes/pendientes'); // <-- Agrega esto
   try {
     const [rows] = await pool.query(`
       SELECT 
@@ -703,7 +703,7 @@ app.get('/api/solicitudes/pendientes', async (req, res) => {
       ORDER BY s.fecha_solicitud DESC
       LIMIT 5
     `);
-    console.log('Resultados encontrados:', rows.length); // <-- Agrega esto
+    //console.log('Resultados encontrados:', rows.length); // <-- Agrega esto
     res.json(rows);
   } catch (error) {
     console.error('Error al obtener solicitudes pendientes:', error);
@@ -793,8 +793,8 @@ app.put('/api/solicitudes/:id', requireAdmin, async (req, res) => {
 
 
         // Registrar movimiento en tabla Movimientos
-        console.log('id_usuario_admin que se usará:', id_usuario_admin);
-        console.log('Insertando movimiento con id_articulo:', articleIdFromDB);
+        //console.log('id_usuario_admin que se usará:', id_usuario_admin);
+       // console.log('Insertando movimiento con id_articulo:', articleIdFromDB);
     await connection.execute(
     `INSERT INTO Movimientos 
         (id_articulo, id_usuario, tipo_movimiento, cantidad, fecha, fecha_movimiento, observacion) 
@@ -920,9 +920,850 @@ app.get('/api/stats/pending-requests', async (req, res) => {
     }
 });
 
+// 1. Obtener catálogo completo de un proveedor específico
+app.get("/api/proveedores/:id/catalogo", async (req, res) => {
+  const { id } = req.params
+  try {
+    const [rows] = await pool.execute(
+      `
+            SELECT 
+                pa.id_proveedor_articulo,
+                pa.id_proveedor,
+                pa.id_articulo,
+                pa.precio_unitario,
+                pa.stock_proveedor,
+                pa.tiempo_entrega_dias,
+                pa.activo,
+                a.nombre_articulo,
+                a.descripcion,
+                c.nombre_categoria,
+                p.nombre_proveedor
+            FROM proveedorarticulos pa
+            JOIN articulos a ON pa.id_articulo = a.id_articulo
+            LEFT JOIN categoriaarticulos c ON a.id_categoria = c.id_categoria
+            JOIN proveedores p ON pa.id_proveedor = p.id_proveedor
+            WHERE pa.id_proveedor = ?
+            ORDER BY a.nombre_articulo
+        `,
+      [id],
+    )
+    res.json(rows)
+  } catch (error) {
+    console.error("Error al obtener catálogo del proveedor:", error)
+    res.status(500).json({ error: "Error al obtener catálogo del proveedor" })
+  }
+})
+
+// 2. Obtener un artículo específico del catálogo
+app.get("/api/proveedor-articulos/:id", async (req, res) => {
+  const { id } = req.params
+  try {
+    const [rows] = await pool.execute(
+      `
+            SELECT 
+                pa.id_proveedor_articulo,
+                pa.id_proveedor,
+                pa.id_articulo,
+                pa.precio_unitario,
+                pa.stock_proveedor,
+                pa.tiempo_entrega_dias,
+                pa.activo,
+                a.nombre_articulo,
+                p.nombre_proveedor
+            FROM proveedorarticulos pa
+            JOIN articulos a ON pa.id_articulo = a.id_articulo
+            JOIN proveedores p ON pa.id_proveedor = p.id_proveedor
+            WHERE pa.id_proveedor_articulo = ?
+        `,
+      [id],
+    )
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Artículo del catálogo no encontrado" })
+    }
+
+    res.json(rows[0])
+  } catch (error) {
+    console.error("Error al obtener artículo del catálogo:", error)
+    res.status(500).json({ error: "Error al obtener artículo del catálogo" })
+  }
+})
+
+// 3. Agregar artículo al catálogo de un proveedor
+app.post("/api/proveedor-articulos", async (req, res) => {
+  const { id_proveedor, id_articulo, precio_unitario, stock_proveedor, tiempo_entrega_dias } = req.body
+
+  if (!id_proveedor || !id_articulo || !precio_unitario) {
+    return res.status(400).json({ error: "Proveedor, artículo y precio son obligatorios" })
+  }
+
+  try {
+    // Verificar si ya existe esta combinación
+    const [existing] = await pool.execute(
+      "SELECT id_proveedor_articulo FROM proveedorarticulos WHERE id_proveedor = ? AND id_articulo = ?",
+      [id_proveedor, id_articulo],
+    )
+
+    if (existing.length > 0) {
+      return res.status(409).json({ error: "Este artículo ya está en el catálogo del proveedor" })
+    }
+
+    const [result] = await pool.execute(
+      `
+            INSERT INTO proveedorarticulos 
+            (id_proveedor, id_articulo, precio_unitario, stock_proveedor, tiempo_entrega_dias, activo) 
+            VALUES (?, ?, ?, ?, ?, true)
+        `,
+      [id_proveedor, id_articulo, precio_unitario, stock_proveedor || 0, tiempo_entrega_dias || 7],
+    )
+
+    res.status(201).json({
+      message: "Artículo agregado al catálogo exitosamente",
+      id: result.insertId,
+    })
+  } catch (error) {
+    console.error("Error al agregar artículo al catálogo:", error)
+    res.status(500).json({ error: "Error al agregar artículo al catálogo" })
+  }
+})
+
+// 4. Actualizar artículo del catálogo
+app.put("/api/proveedor-articulos/:id", async (req, res) => {
+  const { id } = req.params
+  const { precio_unitario, stock_proveedor, tiempo_entrega_dias, activo } = req.body
+
+  if (!precio_unitario) {
+    return res.status(400).json({ error: "El precio unitario es obligatorio" })
+  }
+
+  try {
+    const [result] = await pool.execute(
+      `
+            UPDATE proveedorarticulos 
+            SET precio_unitario = ?, stock_proveedor = ?, tiempo_entrega_dias = ?, activo = ?
+            WHERE id_proveedor_articulo = ?
+        `,
+      [precio_unitario, stock_proveedor || 0, tiempo_entrega_dias || 7, activo !== undefined ? activo : true, id],
+    )
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Artículo del catálogo no encontrado" })
+    }
+
+    res.json({ message: "Artículo del catálogo actualizado exitosamente" })
+  } catch (error) {
+    console.error("Error al actualizar artículo del catálogo:", error)
+    res.status(500).json({ error: "Error al actualizar artículo del catálogo" })
+  }
+})
+
+// 5. Eliminar artículo del catálogo
+app.delete("/api/proveedor-articulos/:id", async (req, res) => {
+  const { id } = req.params
+
+  try {
+    const [result] = await pool.execute("DELETE FROM proveedorarticulos WHERE id_proveedor_articulo = ?", [id])
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Artículo del catálogo no encontrado" })
+    }
+
+    res.json({ message: "Artículo eliminado del catálogo exitosamente" })
+  } catch (error) {
+    console.error("Error al eliminar artículo del catálogo:", error)
+    res.status(500).json({ error: "Error al eliminar artículo del catálogo" })
+  }
+})
+
+//GET todas las recepciones
+app.get("/api/recepciones", async (req, res) => {
+  try {
+    const [rows] = await pool.execute(`
+            SELECT 
+                r.id_recepcion,
+                r.id_proveedor,
+                p.nombre_proveedor,
+                r.id_usuario,
+                u.nombre_usuario,
+                r.fecha_recepcion,
+                r.fecha_entrega_estimada,
+                r.estado_pedido,
+                r.observacion,
+                r.cantidad_solicitada,
+                r.total_pedido
+            FROM recepciones r
+            LEFT JOIN proveedores p ON r.id_proveedor = p.id_proveedor
+            LEFT JOIN usuarios u ON r.id_usuario = u.id_usuario
+            ORDER BY r.fecha_recepcion DESC
+        `)
+    res.json(rows)
+  } catch (error) {
+    console.error("Error al obtener recepciones:", error)
+    res.status(500).json({ error: "Error en el servidor al obtener recepciones." })
+  }
+})
+
+//GET recepción específica con detalles
+app.get("/api/recepciones/:id", async (req, res) => {
+  const { id } = req.params
+
+  try {
+    const [recepcionRows] = await pool.execute(
+      `
+            SELECT 
+                r.id_recepcion,
+                r.id_proveedor,
+                p.nombre_proveedor,
+                r.id_usuario,
+                u.nombre_usuario,
+                r.fecha_recepcion,
+                r.fecha_entrega_estimada,
+                r.estado_pedido,
+                r.observacion,
+                r.cantidad_solicitada,
+                r.total_pedido
+            FROM recepciones r
+            LEFT JOIN proveedores p ON r.id_proveedor = p.id_proveedor
+            LEFT JOIN usuarios u ON r.id_usuario = u.id_usuario
+            WHERE r.id_recepcion = ?
+        `,
+      [id],
+    )
+
+    if (recepcionRows.length === 0) {
+      return res.status(404).json({ error: "Recepción no encontrada." })
+    }
+
+    const [detalleRows] = await pool.execute(
+      `
+            SELECT 
+                dr.id_detalle_recepcion,
+                dr.id_articulo,
+                a.nombre_articulo,
+                dr.cantidad,
+                dr.precio_unitario,
+                dr.subtotal,
+                dr.estado_item,
+                c.nombre_categoria,
+                m.nombre_marca
+            FROM detallerecepciones dr
+            LEFT JOIN articulos a ON dr.id_articulo = a.id_articulo
+            LEFT JOIN categoriaarticulos c ON a.id_categoria = c.id_categoria
+            LEFT JOIN marcaarticulos m ON a.id_marca = m.id_marca
+            WHERE dr.id_recepcion = ?
+        `,
+      [id],
+    )
+
+    const recepcion = recepcionRows[0]
+    recepcion.detalles = detalleRows
+
+    res.json(recepcion)
+  } catch (error) {
+    console.error("Error al obtener recepción por ID:", error)
+    res.status(500).json({ error: "Error en el servidor al obtener la recepción." })
+  }
+})
+
+//POST crear pedido (DIRECTAMENTE COMO 'ENVIADO')
+app.post("/api/recepciones", async (req, res) => {
+  const { id_proveedor, observacion, articulos } = req.body
+
+  const id_usuario = req.session.userId
+  if (!id_usuario) {
+    return res.status(401).json({ error: "Usuario no autenticado." })
+  }
+
+  if (!id_proveedor || !articulos || articulos.length === 0) {
+    return res.status(400).json({ error: "Proveedor y artículos son obligatorios." })
+  }
+
+  const connection = await pool.getConnection()
+
+  try {
+    await connection.beginTransaction()
+
+    const cantidad_total = articulos.reduce((sum, art) => sum + Number.parseInt(art.cantidad), 0)
+    const total_pedido = articulos.reduce((sum, art) => sum + Number.parseFloat(art.subtotal), 0)
+
+    // CREAR DIRECTAMENTE COMO 'ENVIADO'
+    const [recepcionResult] = await connection.execute(
+      `
+            INSERT INTO recepciones 
+            (id_proveedor, id_usuario, fecha_recepcion, observacion, cantidad_solicitada, estado_pedido, total_pedido, fecha_entrega_estimada)
+            VALUES (?, ?, NOW(), ?, ?, 'enviado', ?, DATE_ADD(NOW(), INTERVAL 7 DAY))
+        `,
+      [id_proveedor, id_usuario, observacion || null, cantidad_total, total_pedido],
+    )
+
+    const idRecepcion = recepcionResult.insertId
+
+    for (const articulo of articulos) {
+      await connection.execute(
+        `
+                INSERT INTO detallerecepciones 
+                (id_recepcion, id_articulo, cantidad, precio_unitario, subtotal, estado_item)
+                VALUES (?, ?, ?, ?, ?, 'pendiente')
+            `,
+        [idRecepcion, articulo.id_articulo, articulo.cantidad, articulo.precio_unitario, articulo.subtotal],
+      )
+    }
+
+    await connection.commit()
+    res.status(201).json({
+      message: "Pedido creado y enviado al proveedor exitosamente",
+      id_recepcion: idRecepcion,
+    })
+  } catch (error) {
+    await connection.rollback()
+    console.error("Error al crear recepción:", error)
+    res.status(500).json({ error: "Error en el servidor al crear el pedido." })
+  } finally {
+    connection.release()
+  }
+})
+
+//PUT actualizar estado (SIMPLIFICADO)
+app.put("/api/recepciones/:id/status", async (req, res) => {
+  const { id } = req.params
+  const { estado_pedido } = req.body
+
+  // Solo permitir cambio a 'recibido' o 'cancelado'
+  if (!["recibido", "cancelado"].includes(estado_pedido)) {
+    return res.status(400).json({ error: "Solo se puede marcar como recibido o cancelado." })
+  }
+
+  const connection = await pool.getConnection()
+
+  try {
+    await connection.beginTransaction()
+
+    // Verificar que esté en estado 'enviado'
+    const [recepcionActual] = await connection.execute(`SELECT estado_pedido FROM recepciones WHERE id_recepcion = ?`, [
+      id,
+    ])
+
+    if (recepcionActual.length === 0) {
+      await connection.rollback()
+      return res.status(404).json({ error: "Recepción no encontrada." })
+    }
+
+    if (recepcionActual[0].estado_pedido !== "enviado") {
+      await connection.rollback()
+      return res.status(400).json({ error: "Solo se pueden recibir pedidos que están enviados." })
+    }
+
+    // Actualizar estado
+    await connection.execute(
+      `UPDATE recepciones SET estado_pedido = ?, fecha_entrega_estimada = NOW() WHERE id_recepcion = ?`,
+      [estado_pedido, id],
+    )
+
+    // Si se marca como recibido, actualizar stock
+    if (estado_pedido === "recibido") {
+      const [detalles] = await connection.execute(
+        `SELECT id_articulo, cantidad FROM detallerecepciones WHERE id_recepcion = ?`,
+        [id],
+      )
+
+      const id_usuario = req.session.userId || 1
+
+      for (const detalle of detalles) {
+        // Actualizar stock
+        await connection.execute(`UPDATE articulos SET cantidad = cantidad + ? WHERE id_articulo = ?`, [
+          detalle.cantidad,
+          detalle.id_articulo,
+        ])
+
+        // Registrar movimiento
+        await connection.execute(
+          `INSERT INTO movimientos (id_articulo, id_usuario, tipo_movimiento, cantidad, fecha, observacion)
+           VALUES (?, ?, 'ingreso', ?, NOW(), ?)`,
+          [detalle.id_articulo, id_usuario, detalle.cantidad, `Recepción de pedido #${id}`],
+        )
+      }
+
+      // Actualizar items a 'recibido'
+      await connection.execute(`UPDATE detallerecepciones SET estado_item = 'recibido' WHERE id_recepcion = ?`, [id])
+    }
+
+    await connection.commit()
+    res.json({ message: `Pedido ${estado_pedido} exitosamente.` })
+  } catch (error) {
+    await connection.rollback()
+    console.error("Error al actualizar estado:", error)
+    res.status(500).json({ error: "Error en el servidor al actualizar el estado." })
+  } finally {
+    connection.release()
+  }
+})
+
+//GET artículos de proveedor
+app.get("/api/proveedores/:id/articulos", async (req, res) => {
+  const { id } = req.params
+
+  try {
+    const [rows] = await pool.execute(
+      `
+            SELECT 
+                pa.id_proveedor_articulo,
+                pa.id_articulo,
+                a.nombre_articulo,
+                pa.precio_unitario,
+                pa.stock_proveedor,
+                pa.tiempo_entrega_dias,
+                pa.activo,
+                c.nombre_categoria,
+                m.nombre_marca
+            FROM proveedorarticulos pa
+            JOIN articulos a ON pa.id_articulo = a.id_articulo
+            LEFT JOIN categoriaarticulos c ON a.id_categoria = c.id_categoria
+            LEFT JOIN marcaarticulos m ON a.id_marca = m.id_marca
+            WHERE pa.id_proveedor = ? AND pa.activo = true
+            ORDER BY a.nombre_articulo
+        `,
+      [id],
+    )
+
+    res.json(rows)
+  } catch (error) {
+    console.error("Error al obtener artículos del proveedor:", error)
+    res.status(500).json({ error: "Error en el servidor al obtener artículos del proveedor." })
+  }
+})
+
+//DELETE recepción (solo pendientes)
+app.delete("/api/recepciones/:id", async (req, res) => {
+  const { id } = req.params
+
+  const connection = await pool.getConnection()
+
+  try {
+    await connection.beginTransaction()
+
+    const [recepcionRows] = await connection.execute(`SELECT estado_pedido FROM recepciones WHERE id_recepcion = ?`, [
+      id,
+    ])
+
+    if (recepcionRows.length === 0) {
+      await connection.rollback()
+      return res.status(404).json({ error: "Recepción no encontrada." })
+    }
+
+    if (recepcionRows[0].estado_pedido !== "pendiente") {
+      await connection.rollback()
+      return res.status(400).json({
+        error: "Solo se pueden eliminar recepciones en estado pendiente.",
+      })
+    }
+
+    await connection.execute(`DELETE FROM detallerecepciones WHERE id_recepcion = ?`, [id])
+    await connection.execute(`DELETE FROM recepciones WHERE id_recepcion = ?`, [id])
+
+    await connection.commit()
+    res.json({ message: "Recepción eliminada exitosamente." })
+  } catch (error) {
+    await connection.rollback()
+    console.error("Error al eliminar recepción:", error)
+    res.status(500).json({ error: "Error en el servidor al eliminar la recepción." })
+  } finally {
+    connection.release()
+  }
+})
+
+//GET estadísticas
+app.get("/api/recepciones/stats", async (req, res) => {
+  try {
+    const [stats] = await pool.execute(`
+            SELECT 
+                COUNT(*) as total_recepciones,
+                SUM(CASE WHEN estado_pedido = 'pendiente' THEN 1 ELSE 0 END) as pendientes,
+                SUM(CASE WHEN estado_pedido = 'enviado' THEN 1 ELSE 0 END) as enviados,
+                SUM(CASE WHEN estado_pedido = 'recibido' THEN 1 ELSE 0 END) as recibidos,
+                SUM(total_pedido) as total_valor
+            FROM recepciones
+            WHERE MONTH(fecha_recepcion) = MONTH(NOW()) 
+            AND YEAR(fecha_recepcion) = YEAR(NOW())
+        `)
+
+    res.json(stats[0])
+  } catch (error) {
+    console.error("Error al obtener estadísticas de recepciones:", error)
+    res.status(500).json({ error: "Error en el servidor al obtener estadísticas." })
+  }
+})
+
+module.exports = app
+app.post("/logout", (req, res) => {
+  // Destruir la sesión
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Error al cerrar sesión:", err)
+      return res.status(500).json({ error: "Error al cerrar sesión" })
+    }
+
+    // Limpiar cookie de sesión
+    res.clearCookie("connect.sid") // Nombre por defecto de express-session
+
+    res.json({
+      success: true,
+      message: "Sesión cerrada exitosamente",
+    })
+  })
+})
+// ==============================================
+// ENDPOINTS PARA USUARIO
+// ==============================================
+// Obtener todos los usuarios con sus roles y departamentos
+app.get('/api/usuarios', requireAdmin, async (req, res) => {
+  try {
+    const [rows] = await pool.execute(`
+      SELECT 
+        u.id_usuario,
+        u.rut,
+        u.nombre_usuario,
+        u.id_rol,
+        r.nombre_rol,
+        u.id_departamento,
+        d.nombre AS nombre_departamento
+      FROM usuarios u
+      JOIN roles r ON u.id_rol = r.id_rol
+      LEFT JOIN departamentos d ON u.id_departamento = d.id_departamento
+      ORDER BY u.nombre_usuario
+    `);
+    
+    // Formatear respuesta para manejar valores nulos
+    const usuariosFormateados = rows.map(usuario => ({
+      ...usuario,
+      nombre_departamento: usuario.nombre_departamento || 'Sin departamento'
+    }));
+    
+    res.json(usuariosFormateados);
+  } catch (error) {
+    console.error('Error al obtener usuarios:', error);
+    res.status(500).json({ 
+      error: 'Error al obtener usuarios',
+      detalle: error.message
+    });
+  }
+});
+
+// Obtener un usuario específico por ID
+app.get('/api/usuarios/:id', requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await pool.execute(`
+      SELECT 
+        u.id_usuario,
+        u.rut,
+        u.nombre_usuario,
+        u.id_rol,
+        r.nombre_rol,
+        u.id_departamento,
+        d.nombre AS nombre_departamento
+      FROM usuarios u
+      JOIN roles r ON u.id_rol = r.id_rol
+      LEFT JOIN departamentos d ON u.id_departamento = d.id_departamento
+      WHERE u.id_usuario = ?
+    `, [id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    const usuario = rows[0];
+    usuario.nombre_departamento = usuario.nombre_departamento || 'Sin departamento';
+    
+    res.json(usuario);
+  } catch (error) {
+    console.error('Error al obtener usuario:', error);
+    res.status(500).json({ 
+      error: 'Error al obtener usuario',
+      detalle: error.message
+    });
+  }
+});
+
+// ==============================================
+// ENDPOINTS PARA ROLES
+// ==============================================
+
+// Obtener todos los roles
+app.get('/api/roles', async (req, res) => {
+  try {
+    const [rows] = await pool.execute(`
+      SELECT 
+        id_rol,
+        nombre_rol 
+      FROM roles 
+      ORDER BY nombre_rol
+    `);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error al obtener roles:', error);
+    res.status(500).json({ 
+      error: 'Error al obtener roles',
+      detalle: error.message
+    });
+  }
+});
+
+// ==============================================
+// ENDPOINTS PARA DEPARTAMENTOS
+// ==============================================
+
+// Obtener todos los departamentos
+app.get('/api/departamentos', async (req, res) => {
+  try {
+    const [rows] = await pool.execute(`
+      SELECT 
+        id_departamento,
+        nombre AS nombre_departamento
+      FROM departamentos 
+      ORDER BY nombre
+    `);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error al obtener departamentos:', error);
+    res.status(500).json({ 
+      error: 'Error al obtener departamentos',
+      detalle: error.message
+    });
+  }
+});
+
+// Crear nuevo departamento
+app.post('/api/departamentos', requireAdmin, async (req, res) => {
+  const { nombre } = req.body;
+
+  if (!nombre || nombre.trim() === '') {
+    return res.status(400).json({ error: 'El nombre del departamento es obligatorio' });
+  }
+
+  try {
+    const [result] = await pool.execute(
+      'INSERT INTO departamentos (nombre) VALUES (?)',
+      [nombre.trim()]
+    );
+    
+    res.status(201).json({ 
+      message: 'Departamento creado correctamente',
+      id_departamento: result.insertId,
+      nombre: nombre.trim()
+    });
+  } catch (error) {
+    console.error('Error al crear departamento:', error);
+    
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ error: 'Ya existe un departamento con ese nombre' });
+    }
+    
+    res.status(500).json({ 
+      error: 'Error al crear departamento',
+      detalle: error.message
+    });
+  }
+});
+
+// Actualizar departamento
+app.put('/api/departamentos/:id', requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { nombre } = req.body;
+
+  if (!nombre || nombre.trim() === '') {
+    return res.status(400).json({ error: 'El nombre del departamento es obligatorio' });
+  }
+
+  try {
+    const [result] = await pool.execute(
+      'UPDATE departamentos SET nombre = ? WHERE id_departamento = ?',
+      [nombre.trim(), id]
+    );
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Departamento no encontrado' });
+    }
+    
+    res.json({ 
+      message: 'Departamento actualizado correctamente',
+      id_departamento: id,
+      nombre: nombre.trim()
+    });
+  } catch (error) {
+    console.error('Error al actualizar departamento:', error);
+    
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ error: 'Ya existe un departamento con ese nombre' });
+    }
+    
+    res.status(500).json({ 
+      error: 'Error al actualizar departamento',
+      detalle: error.message
+    });
+  }
+});
+
+// Eliminar departamento
+app.delete('/api/departamentos/:id', requireAdmin, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Verificar si hay usuarios en este departamento
+    const [usuarios] = await pool.execute(
+      'SELECT id_usuario FROM usuarios WHERE id_departamento = ? LIMIT 1',
+      [id]
+    );
+
+    if (usuarios.length > 0) {
+      return res.status(400).json({ 
+        error: 'No se puede eliminar el departamento porque tiene usuarios asignados' 
+      });
+    }
+
+    const [result] = await pool.execute(
+      'DELETE FROM departamentos WHERE id_departamento = ?',
+      [id]
+    );
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Departamento no encontrado' });
+    }
+    
+    res.json({ 
+      message: 'Departamento eliminado correctamente',
+      id_departamento: id
+    });
+  } catch (error) {
+    console.error('Error al eliminar departamento:', error);
+    res.status(500).json({ 
+      error: 'Error al eliminar departamento',
+      detalle: error.message
+    });
+  }
+});
+const bcrypt = require('bcryptjs');
+// Crear un nuevo usuario
+app.post('/api/usuarios', requireAdmin, async (req, res) => {
+  const { rut, nombre_usuario, contrasena, id_rol, id_departamento } = req.body;
+
+  // Validaciones básicas
+  if (!rut || !nombre_usuario || !contrasena || !id_rol) {
+    return res.status(400).json({ message: 'Los campos RUT, nombre, contraseña y rol son obligatorios.' });
+  }
+
+  try {
+    // Hashear la contraseña antes de guardarla
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(contrasena, salt);
+
+    const [result] = await pool.execute(
+      'INSERT INTO usuarios (rut, nombre_usuario, contrasena, id_rol, id_departamento) VALUES (?, ?, ?, ?, ?)',
+      [rut, nombre_usuario, hashedPassword, id_rol, id_departamento || null] // Usa null si el departamento no se envía
+    );
+
+    res.status(201).json({ 
+      message: 'Usuario creado correctamente', 
+      id_usuario: result.insertId 
+    });
+
+  } catch (error) {
+    console.error('Error al crear usuario:', error);
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ message: 'El RUT ingresado ya está registrado.' });
+    }
+    res.status(500).json({ message: 'Error interno del servidor al crear el usuario.' });
+  }
+});
+
+// Actualizar un usuario existente
+app.put('/api/usuarios/:id', requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { rut, nombre_usuario, contrasena, id_rol, id_departamento } = req.body;
+
+  if (!rut || !nombre_usuario || !id_rol) {
+    return res.status(400).json({ message: 'Los campos RUT, nombre y rol son obligatorios.' });
+  }
+
+  try {
+    // Construimos la consulta y los parámetros dinámicamente
+    let query = 'UPDATE usuarios SET rut = ?, nombre_usuario = ?, id_rol = ?, id_departamento = ?';
+    const params = [rut, nombre_usuario, id_rol, id_departamento || null];
+
+    // Solo actualizamos la contraseña si se proporcionó una nueva
+    if (contrasena && contrasena.trim() !== '') {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(contrasena, salt);
+      query += ', contrasena = ?';
+      params.push(hashedPassword);
+    }
+
+    // Añadimos la condición WHERE al final
+    query += ' WHERE id_usuario = ?';
+    params.push(id);
+
+    // Ejecutamos la consulta de actualización directamente
+    const [result] = await pool.execute(query, params);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Usuario no encontrado.' });
+    }
+
+    res.json({ message: 'Usuario actualizado correctamente.' });
+
+  } catch (error) {
+    // Este bloque catch ahora manejará los errores de duplicados de MySQL
+    console.error('Error al actualizar usuario:', error);
+    
+    // Si el error es por un RUT duplicado, enviamos un 409.
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ message: 'El RUT ingresado ya pertenece a otro usuario.' });
+    }
+    
+    // Para cualquier otro error, enviamos un 500.
+    res.status(500).json({ message: 'Error interno del servidor al actualizar el usuario.' });
+  }
+});
+
+// Eliminar un usuario
+app.delete('/api/usuarios/:id', requireAdmin, async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [result] = await pool.execute('DELETE FROM usuarios WHERE id_usuario = ?', [id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+        res.json({ message: 'Usuario eliminado correctamente' });
+
+    } catch (error) {
+        console.error('Error al eliminar usuario:', error);
+        res.status(500).json({ message: 'Error interno del servidor al eliminar el usuario.' });
+    }
+});
+app.get('/api/usuarios/check-rut/:rut', async (req, res) => {
+  try {
+    const { rut } = req.params;
+    const [rows] = await pool.execute(
+      'SELECT id_usuario FROM usuarios WHERE rut = ?',
+      [rut]
+    );
+    
+    if (rows.length > 0) {
+      res.json({ exists: true, userId: rows[0].id_usuario });
+    } else {
+      res.json({ exists: false });
+    }
+  } catch (error) {
+    console.error('Error verificando RUT:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+});
+
+
 
 // Iniciar el servidor
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
     console.log('¡Listo para gestionar tu inventario!');
 });
+

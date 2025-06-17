@@ -241,7 +241,7 @@
                     Gestión Inventario
                 </span>
             </h1>
-            <p class="text-xs text-gray-400 mt-1">Municipalidad de Quilleco</p>
+            <p class="text-xs text-gray-400 mt-1">MUNI Quilleco</p>
         </header>
         
         <!-- Navegación -->
@@ -265,6 +265,19 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                 </svg>
                 <span class="font-medium">Movimientos</span>
+            </a>
+            <a href="/recepciones.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
+                <svg class="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                </svg>
+                <span class="font-medium">Recepciones</span>
+            </a>
+            
+            <a href="/catalogo-proveedores.html" class="nav-link flex items-center px-4 py-3 text-gray-300  from-purple-600 to-purple-700 rounded-lg ">
+                <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M7 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M9 7h6"/>
+                </svg>
+                <span class="font-medium">Catálogo</span>
             </a>
             
             <a href="/proveedores.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 hover:text-white rounded-lg group">
@@ -645,8 +658,9 @@
             articulos.forEach(articulo => {
                 const option = document.createElement('option');
                 option.value = articulo.id_articulo;
-                option.textContent = `${articulo.nombre_articulo} (Stock: ${articulo.cantidad})`;
-                option.setAttribute('data-stock', articulo.cantidad);
+                const stock = articulo.cantidad ?? articulo.stock ?? 0;
+                option.textContent = `${articulo.nombre_articulo} (Stock: ${stock})`;
+                option.setAttribute('data-stock', stock);
                 addArticuloSelect.appendChild(option);
             });
             
@@ -660,7 +674,7 @@
         function validarCantidad(input) {
             const errorElement = document.getElementById('cantidadError');
             const selectedOption = addArticuloSelect.options[addArticuloSelect.selectedIndex];
-            const maxStock = selectedOption ? parseInt(selectedOption.getAttribute('data-stock')) : 0;
+            const maxStock = selectedOption ? parseInt(selectedOption.getAttribute('data-stock')) || 0 : 0;
             
             if (input.value > maxStock) {
                 errorElement.textContent = `No puede solicitar más de ${maxStock} unidades`;

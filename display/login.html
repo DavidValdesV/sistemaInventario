@@ -1,121 +1,426 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Inventario MUNI Quilleco</title>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso al Sistema - Municipalidad de Quilleco</title>
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
-    <link
-      rel="stylesheet"
-      as="style"
-      onload="this.rel='stylesheet'"
-      href="https://fonts.googleapis.com/css2?display=swap&family=Inter:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900"
-    />
+    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?display=swap&family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  </head>
-  <body style='font-family: Inter, "Noto Sans", sans-serif;'>
-    <div class="min-h-screen flex flex-col bg-white">
-      <header class="flex items-center justify-between border-b px-10 py-3 border-[#f0f2f5]">
-        <div class="flex items-center gap-4 text-[#111418]">
-          <div class="size-6 text-[#0c7ff2]">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
-            </svg>
-          </div>
-          <h2 class="text-lg font-bold">Sistema Inventario Municipalidad de Quilleco</h2>
-        </div>
-      </header>
-
-      <div class="flex flex-1">
-        <div class="flex flex-1 items-center justify-center pl-40">
-          <form id="loginForm" class="w-[512px]"> 
-            <h2 class="text-2xl font-bold text-left pb-5">Bienvenido</h2>
-
-            <div class="mb-4">
-              <label class="block text-base font-medium mb-2" for="usuario">Usuario</label>
-              <input
-                type="text"
-                id="usuario"
-                name="usuario"
-                placeholder="Ingrese su Usuario"
-                required
-                class="form-input w-full h-14 px-4 border rounded-lg border-[#dbe0e6] placeholder-[#60758a]"
-              />
+    <style>
+        /* Gradientes personalizados */
+        .bg-municipal {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
+        }
+        
+        .bg-card-gradient {
+            background: linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.98) 100%);
+            backdrop-filter: blur(20px);
+        }
+        
+        /* Animaciones elegantes */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1deg); }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .animate-fadeInUp {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        
+        .animate-slideInLeft {
+            animation: slideInLeft 0.8s ease-out forwards;
+        }
+        
+        .animate-shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        
+        /* Efectos de hover elegantes */
+        .input-elegant {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        .input-elegant:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-1px);
+        }
+        
+        .btn-municipal {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-municipal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-municipal:active {
+            transform: translateY(0);
+        }
+        
+        .btn-municipal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-municipal:hover::before {
+            left: 100%;
+        }
+        
+        /* Elementos decorativos */
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 197, 253, 0.05));
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        .decorative-square {
+            position: absolute;
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.05), rgba(147, 197, 253, 0.02));
+            transform: rotate(45deg);
+            animation: float 10s ease-in-out infinite reverse;
+        }
+        
+        /* Tipografía elegante */
+        .font-municipal {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #1e40af, #3b82f6, #60a5fa);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Efectos de cristal */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .decorative-circle, .decorative-square {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-municipal min-h-screen font-sans overflow-hidden">
+    <!-- Elementos decorativos de fondo -->
+    <div class="decorative-circle w-96 h-96 top-10 -left-48" style="animation-delay: 0s;"></div>
+    <div class="decorative-circle w-64 h-64 top-1/3 -right-32" style="animation-delay: 2s;"></div>
+    <div class="decorative-square w-32 h-32 bottom-1/4 left-1/4" style="animation-delay: 1s;"></div>
+    <div class="decorative-square w-24 h-24 top-1/4 right-1/3" style="animation-delay: 3s;"></div>
+    
+    <!-- Contenedor principal -->
+    <div class="min-h-screen flex items-center justify-center p-4 relative">
+        <!-- Tarjeta principal de login -->
+        <div class="bg-card-gradient rounded-3xl shadow-2xl p-8 md:p-12 w-full max-w-md relative overflow-hidden animate-fadeInUp">
+            <!-- Efecto de brillo sutil -->
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700"></div>
+            
+            <!-- Header institucional -->
+            <div class="text-center mb-8 animate-slideInLeft">
+                <!-- Logo/Icono institucional -->
+                <div class="mx-auto w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center mb-6 shadow-lg animate-float">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                </div>
+                
+                <!-- Título principal -->
+                <h1 class="font-municipal text-3xl font-bold text-gradient mb-2">
+                    Municipalidad de Quilleco
+                </h1>
+                <p class="text-slate-600 text-sm font-medium">
+                    Sistema de Gestión de Inventario
+                </p>
+                
+                <!-- Línea decorativa -->
+                <div class="w-24 h-0.5 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mt-4 rounded-full"></div>
             </div>
-
-            <div class="mb-6">
-              <label class="block text-base font-medium mb-2" for="contrasena">Contraseña</label>
-              <input
-                type="password"
-                id="contrasena"
-                name="contrasena"
-                placeholder="Ingrese su Contraseña"
-                required
-                class="form-input w-full h-14 px-4 border rounded-lg border-[#dbe0e6] placeholder-[#60758a]"
-              />
+            
+            <!-- Formulario de login -->
+            <form id="loginForm" class="space-y-6">
+                <div class="space-y-4">
+                    <!-- Campo Usuario -->
+                    <div class="relative">
+                        <label for="usuario" class="block text-sm font-semibold text-slate-700 mb-2">
+                            <svg class="w-4 h-4 inline mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            Usuario
+                        </label>
+                        <input
+                            type="text"
+                            id="usuario"
+                            name="usuario"
+                            placeholder="Ingrese su nombre de usuario"
+                            required
+                            class="input-elegant w-full px-4 py-4 rounded-xl text-slate-800 placeholder-slate-400 font-medium"
+                        />
+                    </div>
+                    
+                    <!-- Campo Contraseña -->
+                    <div class="relative">
+                        <label for="contrasena" class="block text-sm font-semibold text-slate-700 mb-2">
+                            <svg class="w-4 h-4 inline mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                            Contraseña
+                        </label>
+                        <input
+                            type="password"
+                            id="contrasena"
+                            name="contrasena"
+                            placeholder="Ingrese su contraseña"
+                            required
+                            class="input-elegant w-full px-4 py-4 rounded-xl text-slate-800 placeholder-slate-400 font-medium"
+                        />
+                    </div>
+                </div>
+                
+                <!-- Mensaje de error -->
+                <div id="errorMessage" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
+                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span id="errorText"></span>
+                </div>
+                
+                <!-- Botón de acceso -->
+                <button
+                    type="submit"
+                    class="btn-municipal w-full py-4 text-white font-bold rounded-xl text-lg shadow-lg relative overflow-hidden"
+                >
+                    <span class="relative z-10 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                        </svg>
+                        Acceder al Sistema
+                    </span>
+                </button>
+            </form>
+            
+            <!-- Footer institucional -->
+            <div class="mt-8 pt-6 border-t border-slate-200 text-center">
+                <p class="text-xs text-slate-500 font-medium">
+                    © 2025 Municipalidad de Quilleco
+                </p>
+                <p class="text-xs text-slate-400 mt-1">
+                    Sistema seguro y confiable
+                </p>
             </div>
-
-            <div>
-              <button
-                type="submit"
-                class="w-full h-10 bg-[#0c7ff2] text-white font-bold rounded-lg"
-              >
-                Ingresar
-              </button>
+            
+            <!-- Indicador de seguridad -->
+            <div class="absolute top-4 right-4 glass-effect rounded-full p-2">
+                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
             </div>
-            <p id="errorMessage" class="text-red-500 text-center mt-3" style="display:none;"></p>
-          </form>
         </div>
-
-        <div class="flex flex-1 flex-col items-center justify-center pr-20 space-y-4">
-          <h2 class="text-3xl font-bold text-center text-[#111418]">Municipalidad de Quilleco</h2>
-          <img
-            src="/imgs/logoMuniQuilleco.png"
-            alt="Imagen Municipalidad"
-            class="max-w-full h-auto rounded-lg shadow-lg"
-          />
+        
+        <!-- Información lateral (solo en pantallas grandes) -->
+        <div class="hidden lg:block absolute right-8 top-1/2 transform -translate-y-1/2 text-white max-w-sm">
+            <div class="glass-effect rounded-2xl p-8 animate-fadeInUp" style="animation-delay: 0.3s;">
+                <h3 class="font-municipal text-2xl font-bold mb-4">
+                    Gestión Moderna
+                </h3>
+                <p class="text-slate-200 text-sm leading-relaxed mb-6">
+                    Sistema integral para la administración eficiente de recursos municipales, 
+                    diseñado con los más altos estándares de seguridad y usabilidad.
+                </p>
+                <div class="space-y-3">
+                    <div class="flex items-center text-sm">
+                        <svg class="w-4 h-4 mr-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span>Acceso seguro y encriptado</span>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        <svg class="w-4 h-4 mr-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span>Control de inventario en tiempo real</span>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        <svg class="w-4 h-4 mr-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span>Reportes y análisis avanzados</span>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+    </div>
+    
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+            <p class="text-slate-700 font-medium">Verificando credenciales...</p>
+        </div>
     </div>
 
     <script>
-      // Obtener el formulario
-      const loginForm = document.getElementById('loginForm');
-      const errorMessage = document.getElementById('errorMessage');
+        // Obtener elementos del DOM
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const loadingOverlay = document.getElementById('loadingOverlay');
 
-      // Escuchar el evento submit del formulario
-      loginForm.addEventListener('submit', async (event) => {
-        event.preventDefault(); // Prevenir el envío tradicional del formulario
-
-        // Obtener los valores de usuario y contraseña
-        const usuario = document.getElementById('usuario').value;
-        const contrasena = document.getElementById('contrasena').value;
-
-        try {
-          const response = await fetch('/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json' // Indicar que enviamos JSON
-            },
-            body: JSON.stringify({ usuario, contrasena }) // Convertir a JSON
-          });
-
-          const data = await response.json();
-
-          if (response.ok) { // Si la respuesta HTTP es 2xx (éxito)
-            localStorage.setItem('userRoleName', data.userRoleName); // Guardar el nombre del rol
-            localStorage.setItem('userId', data.userId);             // Guardar el ID del usuario
-            window.location.href = data.redirectTo; // Redirigir
-          } else {
-            // Manejar errores del servidor (ej. 401 Credenciales inválidas)
-            errorMessage.textContent = data.error || 'Error al iniciar sesión.';
-            errorMessage.style.display = 'block';
-          }
-        } catch (error) {
-          console.error('Error de red o del servidor:', error);
-          errorMessage.textContent = 'Error de conexión. Intente nuevamente.';
-          errorMessage.style.display = 'block';
+        // Función para mostrar errores con animación
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.classList.remove('hidden');
+            errorMessage.style.animation = 'fadeInUp 0.3s ease-out';
+            
+            // Auto-ocultar después de 5 segundos
+            setTimeout(() => {
+                hideError();
+            }, 5000);
         }
-      });
+
+        // Función para ocultar errores
+        function hideError() {
+            errorMessage.classList.add('hidden');
+        }
+
+        // Función para mostrar loading
+        function showLoading() {
+            loadingOverlay.classList.remove('hidden');
+        }
+
+        // Función para ocultar loading
+        function hideLoading() {
+            loadingOverlay.classList.add('hidden');
+        }
+
+        // Escuchar el evento submit del formulario
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            // Ocultar errores previos
+            hideError();
+            
+            // Mostrar loading
+            showLoading();
+
+            // Obtener los valores de usuario y contraseña
+            const usuario = document.getElementById('usuario').value.trim();
+            const contrasena = document.getElementById('contrasena').value;
+
+            // Validación básica del lado del cliente
+            if (!usuario || !contrasena) {
+                hideLoading();
+                showError('Por favor, complete todos los campos.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ usuario, contrasena })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Éxito - guardar datos y redirigir
+                    localStorage.setItem('userRoleName', data.userRoleName);
+                    localStorage.setItem('userId', data.userId);
+                    
+                    // Pequeña pausa para mostrar éxito antes de redirigir
+                    setTimeout(() => {
+                        window.location.href = data.redirectTo;
+                    }, 500);
+                } else {
+                    // Error del servidor
+                    hideLoading();
+                    showError(data.error || 'Credenciales inválidas. Verifique su usuario y contraseña.');
+                }
+            } catch (error) {
+                console.error('Error de red o del servidor:', error);
+                hideLoading();
+                showError('Error de conexión. Por favor, verifique su conexión a internet e intente nuevamente.');
+            }
+        });
+
+        // Limpiar errores cuando el usuario empiece a escribir
+        document.getElementById('usuario').addEventListener('input', hideError);
+        document.getElementById('contrasena').addEventListener('input', hideError);
+
+        // Efecto de enfoque automático
+        window.addEventListener('load', () => {
+            document.getElementById('usuario').focus();
+        });
+
+        // Prevenir el envío del formulario con Enter en campos vacíos
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const usuario = document.getElementById('usuario').value.trim();
+                const contrasena = document.getElementById('contrasena').value;
+                
+                if (!usuario || !contrasena) {
+                    e.preventDefault();
+                    showError('Por favor, complete todos los campos antes de continuar.');
+                }
+            }
+        });
     </script>
-  </body>
+</body>
 </html>
